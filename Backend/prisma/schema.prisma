@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,7 +6,6 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
 model InstitutionalInfo {
   id              Int      @id @default(autoincrement())
   aboutTitle      String
@@ -29,3 +23,68 @@ model InstitutionalInfo {
 
   @@map("institutional_info")
 }
+// Enums for User role
+enum Role {
+  ADMIN
+  NEGOCIO
+}
+
+// Enums for User account status
+enum UserStatus {
+  PENDIENTE_ACTIVACION
+  ACTIVO
+  INACTIVO
+}
+
+// Person entity - Stores personal information
+model Person {
+  id_person String @id @default(cuid())
+  name      String   @db.VarChar(50)
+  first_lastname String   @db.VarChar(50)
+  second_lastname String   @db.VarChar(50)
+  phone     String   @db.VarChar(20)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User?
+}
+
+// User entity - Represents a user account
+model User {
+  id_person String      @id @default(cuid())
+  email     String      @unique @db.VarChar(100)
+  passwordHash String    @db.VarChar(255)
+  role        Role        @default(NEGOCIO)
+  status      UserStatus  @default(PENDIENTE_ACTIVACION)
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+
+  personId  String      @unique
+  person    Person      @relation(fields: [personId], references: [id_person], onDelete: Cascade)
+
+  activationTokens     ActivationToken[]
+  passwordResetTokens  PasswordResetToken[]
+}
+
+// ActivationToken entity - For account activation flow
+model ActivationToken {
+  id String @id @default(cuid())
+  tokenHash String @db.VarChar(255) @unique
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  userId String
+  user User @relation(fields: [userId], references: [id_person], onDelete: Cascade)
+}
+
+// PasswordResetToken entity - For password recovery flow
+model PasswordResetToken {
+  id String @id @default(cuid())
+  tokenHash String @db.VarChar(255) @unique
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  userId String
+  user User @relation(fields: [userId], references: [id_person], onDelete: Cascade)
+}
+
