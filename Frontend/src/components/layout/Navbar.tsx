@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Button } from '../ui/Button'
 import { CloseIcon, MenuIcon } from '../ui/icons'
 import logo from '../../assets/logo.png'
+import { useAuth } from '../../modules/usuarios/context/useAuth'
+import { UserMenu } from '../../modules/usuarios/components/UserMenu/UserMenu'
 
 const NAV_LINKS = [
   { href: '/#quienes-somos', label: 'Quiénes somos' },
@@ -14,6 +16,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
+  const { isAuthenticated } = useAuth()
 
   return (
     <header className="sticky top-0 z-30 border-b border-brand-navy/10 bg-brand-paper/90 backdrop-blur">
@@ -30,10 +33,8 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden lg:block">
-          <Button href="/afiliacion" variant="accent">
-            Afíliese
-          </Button>
+        <div className="hidden items-center gap-4 lg:flex">
+          {isAuthenticated ? <UserMenu /> : <><Button href="/afiliacion" variant="accent">Afíliese</Button><Button href="/usuarios/login" variant="primary">Iniciar sesión</Button></>}
         </div>
 
         <button
@@ -58,9 +59,9 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          <Button href="/afiliacion" variant="accent" className="mt-4 justify-center">
-            Afíliese
-          </Button>
+          {!isAuthenticated && <Button href="/afiliacion" variant="accent" className="mt-4 justify-center">Afíliese</Button>}
+          {!isAuthenticated && <Button href="/usuarios/login" variant="primary" className="mt-2 justify-center">Iniciar sesión</Button>}
+          {isAuthenticated && <div className="mt-4"><UserMenu /></div>}
         </div>
       )}
     </header>

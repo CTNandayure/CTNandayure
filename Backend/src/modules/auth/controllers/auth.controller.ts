@@ -15,6 +15,7 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
   ChangePasswordDto,
+  ResendActivationDto,
 } from '../dtos';
 import { UserEntity } from '@/modules/user/entities';
 import { JwtAuthGuard } from '../guards';
@@ -46,6 +47,23 @@ export class AuthController {
     @Body() activateDto: ActivateAccountDto,
   ): Promise<UserEntity> {
     return this.authService.activateAccount(activateDto);
+  }
+
+  /**
+   * Request a new activation email for a pending account
+   * POST /auth/resend-activation
+   */
+  @Post('resend-activation')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @HttpCode(HttpStatus.OK)
+  async resendActivation(
+    @Body() resendActivationDto: ResendActivationDto,
+  ): Promise<{ message: string }> {
+    await this.authService.resendActivation(resendActivationDto.email);
+    return {
+      message:
+        'Si el correo corresponde a una cuenta pendiente, recibirás un nuevo enlace de activación.',
+    };
   }
 
   /**
