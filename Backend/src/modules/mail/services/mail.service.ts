@@ -56,7 +56,7 @@ export class MailService implements IMailService {
         'http://localhost:5173',
       );
 
-      const activationLink = `${frontendUrl}/usuarios/activar-token?token=${activationToken}`;
+      const activationLink = `${frontendUrl}/users/activar-token?token=${activationToken}`;
       const expirationTime = this.configService.get<string>(
         'ACTIVATION_TOKEN_EXPIRES_IN',
         '24h',

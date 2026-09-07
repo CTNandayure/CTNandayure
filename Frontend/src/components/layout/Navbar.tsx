@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Button } from '../ui/Button'
 import { CloseIcon, MenuIcon } from '../ui/icons'
 import logo from '../../assets/logo.png'
-import { useAuth } from '../../modules/usuarios/context/useAuth'
-import { UserMenu } from '../../modules/usuarios/components/UserMenu/UserMenu'
+import { useAuth } from '../../modules/users/context/useAuth'
+import { UserMenu } from '../../modules/users/components/UserMenu/UserMenu'
 
 const NAV_LINKS = [
   { href: '/#quienes-somos', label: 'Quiénes somos' },
@@ -34,7 +34,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-4 lg:flex">
-          {isAuthenticated ? <UserMenu /> : <><Button href="/afiliacion" variant="accent">Afíliese</Button><Button href="/usuarios/login" variant="primary">Iniciar sesión</Button></>}
+          {isAuthenticated ? <UserMenu /> : <><Button href="/afiliacion" variant="accent">Afíliese</Button><Button href="/users/login" variant="primary">Iniciar sesión</Button></>}
         </div>
 
         <button
@@ -60,7 +60,7 @@ export function Navbar() {
             </a>
           ))}
           {!isAuthenticated && <Button href="/afiliacion" variant="accent" className="mt-4 justify-center">Afíliese</Button>}
-          {!isAuthenticated && <Button href="/usuarios/login" variant="primary" className="mt-2 justify-center">Iniciar sesión</Button>}
+                    {!isAuthenticated && <Button href="/users/login" variant="primary" className="mt-2 justify-center">Iniciar sesión</Button>}
           {isAuthenticated && <div className="mt-4"><UserMenu /></div>}
         </div>
       )}

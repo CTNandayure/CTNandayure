@@ -6,5 +6,5 @@ export function ProtectedRoute() {
   const location = useLocation()
 
   if (isLoading) return <div className="flex min-h-screen items-center justify-center text-brand-navy">Cargando...</div>
-  return isAuthenticated ? <Outlet /> : <Navigate to="/usuarios/login" replace state={{ from: location.pathname }} />
+  return isAuthenticated ? <Outlet /> : <Navigate to="/users/login" replace state={{ from: location.pathname }} />
 }

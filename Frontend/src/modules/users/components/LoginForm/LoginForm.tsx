@@ -31,8 +31,8 @@ export function LoginForm() {
       </label>
       <Button type="submit" disabled={form.isSubmitting} className="w-full">{form.isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}</Button>
       <div className="flex justify-between gap-4 text-sm">
-        <Link to="/usuarios/recuperar" className="font-semibold text-brand-green-strong hover:underline">Olvidé mi contraseña</Link>
-        <Link to="/usuarios/activar" className="font-semibold text-brand-navy hover:underline">Solicitar activación</Link>
+        <Link to="/users/recuperar" className="font-semibold text-brand-green-strong hover:underline">Olvidé mi contraseña</Link>
+        <Link to="/users/activar" className="font-semibold text-brand-navy hover:underline">Solicitar activación</Link>
       </div>
     </form>
   )

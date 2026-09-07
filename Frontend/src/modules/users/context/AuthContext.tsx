@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { authService } from '../services/authService'
 import { tokenManager } from '../services/tokenManager'
-import type { Usuario } from '../types/usuario.types'
+import type { User } from '../types/user.types'
 
 interface AuthContextValue {
-  user: Usuario | null
+  user: User | null
   isLoading: boolean
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<void>
@@ -15,7 +15,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<Usuario | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const refreshUser = async () => {

@@ -1,6 +1,6 @@
 import { API_URL } from '../../../content/api'
 import { tokenManager } from './tokenManager'
-import type { LoginResponse, Usuario } from '../types/usuario.types'
+import type { LoginResponse, User } from '../types/user.types'
 
 type RequestOptions = RequestInit & { auth?: boolean }
 
@@ -26,22 +26,22 @@ export const authService = {
     return request<LoginResponse>('/auth/login', { method: 'POST', auth: false, body: JSON.stringify({ email, password }) })
   },
   async getCurrentUser() {
-    return request<Usuario>('/auth/me')
+    return request<User>('/auth/me')
   },
   async forgotPassword(email: string) {
     return request<{ message: string }>('/auth/forgot-password', { method: 'POST', auth: false, body: JSON.stringify({ email }) })
   },
   async resetPassword(token: string, password: string) {
-    return request<Usuario>('/auth/reset-password', { method: 'POST', auth: false, body: JSON.stringify({ token, password }) })
+    return request<User>('/auth/reset-password', { method: 'POST', auth: false, body: JSON.stringify({ token, password }) })
   },
   async activateAccount(token: string, password: string) {
-    return request<Usuario>('/auth/activate', { method: 'POST', auth: false, body: JSON.stringify({ token, password }) })
+    return request<User>('/auth/activate', { method: 'POST', auth: false, body: JSON.stringify({ token, password }) })
   },
   async resendActivation(email: string) {
     return request<{ message: string }>('/auth/resend-activation', { method: 'POST', auth: false, body: JSON.stringify({ email }) })
   },
   async changePassword(currentPassword: string, newPassword: string) {
-    return request<Usuario>('/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) })
+    return request<User>('/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) })
   },
   logout() {
     tokenManager.clear()

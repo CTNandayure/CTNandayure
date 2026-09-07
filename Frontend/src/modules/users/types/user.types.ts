@@ -1,7 +1,7 @@
 export type UserRole = 'ADMIN' | 'USER' | string
 export type UserStatus = 'ACTIVO' | 'INACTIVO' | 'PENDIENTE_ACTIVACION' | string
 
-export interface Usuario {
+export interface User {
   id_person: string
   email: string
   role: UserRole

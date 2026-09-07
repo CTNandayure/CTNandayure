@@ -1,0 +1,12 @@
+import { useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { Alert, Button, Card, Input } from '../../../components/ui'
+import { authService } from '../services/authService'
+import { useErrorHandler } from '../hooks/useErrorHandler'
+import { validatePassword, validatePasswordConfirmation } from '../utils/validators'
+
+export default function ResetPasswordPage() {
+  const [params] = useSearchParams(); const token = params.get('token') ?? ''; const [password, setPassword] = useState(''); const [confirmation, setConfirmation] = useState(''); const [error, setError] = useState(''); const [done, setDone] = useState(false); const [loading, setLoading] = useState(false); const formatError = useErrorHandler()
+  const submit = async (event: React.FormEvent) => { event.preventDefault(); const validation = validatePassword(password) || validatePasswordConfirmation(password, confirmation); if (!token) return setError('El enlace no contiene un token válido'); if (validation) return setError(validation); setLoading(true); setError(''); try { await authService.resetPassword(token, password); setDone(true) } catch (cause) { setError(formatError(cause)) } finally { setLoading(false) } }
+  return <main className="flex min-h-screen items-center justify-center px-6 py-12"><Card className="w-full max-w-md p-7"><h1 className="text-2xl font-bold text-brand-navy">Restablecer contraseña</h1>{done ? <div className="mt-6 space-y-4"><Alert variant="success" title="Contraseña actualizada">Tu contraseña fue restablecida correctamente.</Alert><Link to="/users/login" className="block text-center font-semibold text-brand-green-strong hover:underline">Ir al inicio de sesión</Link></div> : <form onSubmit={submit} className="mt-7 space-y-5">{error && <Alert variant="error">{error}</Alert>}<div><label htmlFor="reset-password" className="mb-1.5 block text-sm font-semibold text-brand-navy">Nueva contraseña</label><Input id="reset-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} /></div><div><label htmlFor="reset-confirm" className="mb-1.5 block text-sm font-semibold text-brand-navy">Confirmar contraseña</label><Input id="reset-confirm" type="password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} /></div><Button type="submit" disabled={loading} className="w-full">{loading ? 'Guardando...' : 'Restablecer contraseña'}</Button></form>}</Card></main>
+}
