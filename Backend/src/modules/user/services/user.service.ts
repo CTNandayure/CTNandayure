@@ -5,23 +5,38 @@ import {
   BadRequestException,
   Logger,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '@/prisma/prisma.service';
-import { CreateUserDto, UpdateUserStatusDto } from '../dtos';
+import { MailService } from '@/modules/mail/services';
+import { CreateUserDto, UpdateUserDto, UpdateUserStatusDto } from '../dtos';
+import { Role } from '@/generated/prisma/enums';
 import { UserEntity } from '../entities';
 import * as argon2 from 'argon2';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+    private configService: ConfigService,
+  ) {}
 
   /**
    * Create a new user with personal information
-   * User starts in PENDIENTE_ACTIVACION status
+   * User starts in PENDIENTE_ACTIVACION status and activation email is sent
    */
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const { name, first_lastname, phone, email } = createUserDto;
+    const {
+      name,
+      first_lastname,
+      second_lastname,
+      phone,
+      email,
+      role,
+    } = createUserDto;
 
     // Check if email already exists
     const existingUser = await this.prisma.user.findUnique({
@@ -39,13 +54,14 @@ export class UserService {
           email,
           passwordHash: '', // Will be set during activation
           person: {
-create: {
+            create: {
               name: name.trim(),
               first_lastname: first_lastname.trim(),
-              second_lastname: 'Admin',  // Valor por defecto
+              second_lastname: second_lastname.trim(),
               phone: phone.trim(),
             },
           },
+          role: role ?? Role.NEGOCIO,
         },
         include: {
           person: true,
@@ -53,9 +69,30 @@ create: {
       });
 
       this.logger.debug(`User created: ${user.email}`);
+
+      // Generate activation token and send email
+      const token = this.generateSecureToken();
+      const tokenHash = this.hashToken(token);
+      const expiresAt = this.getTokenExpiration(
+        this.configService.get<string>('ACTIVATION_TOKEN_EXPIRES_IN', '24h'),
+      );
+
+      await this.prisma.activationToken.create({
+        data: {
+          tokenHash,
+          expiresAt,
+          userId: user.id_person,
+        },
+      });
+
+      // Send activation email with the plain token
+      await this.mailService.sendActivationEmail(user.email, token);
+
+      this.logger.debug(`Activation email sent to ${user.email}`);
       return new UserEntity(user);
     } catch (error) {
-      this.logger.error(`Error creating user: ${error.message}`);
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Error creating user: ${err.message}`);
       throw new BadRequestException('Error al crear el usuario');
     }
   }
@@ -110,6 +147,60 @@ create: {
     }
 
     return new UserEntity(user);
+  }
+
+  /**
+   * Update user details and role/status for admin management.
+   * Email is intentionally not editable.
+   */
+  async updateUser(
+    id_person: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    const existingUser = await this.getUserById(id_person);
+
+    const dataToUpdate: Record<string, any> = {};
+    const personData: Record<string, string> = {};
+
+    if (updateUserDto.name !== undefined) {
+      personData.name = updateUserDto.name.trim();
+    }
+    if (updateUserDto.first_lastname !== undefined) {
+      personData.first_lastname = updateUserDto.first_lastname.trim();
+    }
+    if (updateUserDto.second_lastname !== undefined) {
+      personData.second_lastname = updateUserDto.second_lastname.trim();
+    }
+    if (updateUserDto.phone !== undefined) {
+      personData.phone = updateUserDto.phone.trim();
+    }
+    if (updateUserDto.role !== undefined) {
+      dataToUpdate.role = updateUserDto.role;
+    }
+    if (updateUserDto.status !== undefined) {
+      dataToUpdate.status = updateUserDto.status;
+    }
+
+    if (Object.keys(personData).length > 0) {
+      dataToUpdate.person = {
+        update: personData,
+      };
+    }
+
+    if (Object.keys(dataToUpdate).length === 0) {
+      return existingUser;
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id_person },
+      data: dataToUpdate,
+      include: {
+        person: true,
+      },
+    });
+
+    this.logger.debug(`User ${id_person} updated by admin`);
+    return new UserEntity(updatedUser);
   }
 
   /**
@@ -237,5 +328,45 @@ create: {
     });
 
     return user?.status === 'ACTIVO';
+  }
+
+  /**
+   * Generate secure random token
+   */
+  private generateSecureToken(): string {
+    return crypto.randomBytes(32).toString('hex');
+  }
+
+  /**
+   * Hash token for storage
+   */
+  private hashToken(token: string): string {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
+
+  /**
+   * Parse expiration string and return Date
+   * Supported formats: "1h", "24h", "7d", "30d"
+   */
+  private getTokenExpiration(expirationString: string): Date {
+    const now = new Date();
+    const match = expirationString.match(/^(\d+)([hd])$/);
+
+    if (!match) {
+      // Default to 24 hours
+      return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    }
+
+    const [, value, unit] = match;
+    const numValue = parseInt(value, 10);
+
+    switch (unit) {
+      case 'h':
+        return new Date(now.getTime() + numValue * 60 * 60 * 1000);
+      case 'd':
+        return new Date(now.getTime() + numValue * 24 * 60 * 60 * 1000);
+      default:
+        return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    }
   }
 }

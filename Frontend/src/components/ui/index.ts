@@ -6,6 +6,7 @@ export { Container } from './Container'
 export { FormActions } from './FormActions'
 export { Modal } from './Modal'
 export { SectionHeading, type EyebrowColor } from './SectionHeading'
+export { TableActionButton, type TableActionVariant } from './TableActionButton'
 export { useToast, ToastProvider } from './ToastProvider'
 
 export { FileUpload } from './form/FileUpload'

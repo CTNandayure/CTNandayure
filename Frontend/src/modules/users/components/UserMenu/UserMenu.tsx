@@ -17,6 +17,7 @@ export function UserMenu() {
         <p className="border-b border-brand-navy/10 px-3 pb-2 text-xs text-brand-ink/60">{user.email}</p>
         <Link onClick={() => setOpen(false)} to="/users/perfil" className="block rounded px-3 py-2 text-sm text-brand-navy hover:bg-brand-sand">Mi perfil</Link>
         <Link onClick={() => setOpen(false)} to="/users/cambiar-contrasena" state={{ from: '/' }} className="block rounded px-3 py-2 text-sm text-brand-navy hover:bg-brand-sand">Cambiar contraseña</Link>
+        {user.role === 'ADMIN' && <Link onClick={() => setOpen(false)} to="/admin" className="block rounded px-3 py-2 text-sm text-brand-navy hover:bg-brand-sand">Panel administrativo</Link>}
         <button type="button" onClick={logout} className="w-full cursor-pointer rounded px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50">Cerrar sesión</button>
       </div>}
     </div>
