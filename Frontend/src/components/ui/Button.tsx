@@ -4,7 +4,7 @@ import { cn } from '../../lib/cn'
 export type ButtonVariant = 'primary' | 'accent' | 'outline' | 'text'
 
 const base =
-  'inline-flex items-center justify-center gap-2 font-semibold text-sm rounded-lg transition-colors disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap'
+  'inline-flex cursor-pointer items-center justify-center gap-2 font-semibold text-sm rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap'
 
 const variants: Record<ButtonVariant, string> = {
   primary: `${base} bg-brand-green text-white px-7 py-3.5 hover:bg-brand-green-strong`,

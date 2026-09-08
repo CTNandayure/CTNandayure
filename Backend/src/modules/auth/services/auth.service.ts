@@ -161,6 +161,24 @@ export class AuthService {
   }
 
   /**
+   * Resend an activation link without revealing whether an email exists.
+   */
+  async resendActivation(email: string): Promise<void> {
+    const user = await this.userService.getUserByEmail(email);
+
+    if (!user || user.status !== 'PENDIENTE_ACTIVACION') return;
+
+    try {
+      const activationToken = await this.createActivationToken(user.id_person);
+      await this.mailService.sendActivationEmail(email, activationToken);
+      this.logger.debug(`Activation email resent to ${email}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error resending activation email to ${email}: ${errorMessage}`);
+    }
+  }
+
+  /**
    * Send password reset email
    */
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {

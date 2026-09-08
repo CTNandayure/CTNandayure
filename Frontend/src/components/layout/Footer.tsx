@@ -49,9 +49,7 @@ export function Footer() {
               <span className="text-sm">{info.email}</span>
             </>
           )}
-          <a href="/admin" className="text-sm hover:text-brand-yellow">
-            Panel administrativo
-          </a>
+          
         </div>
       </div>
 

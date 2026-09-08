@@ -16,6 +16,23 @@ export function CloseIcon(props: IconProps) {
   )
 }
 
+export function EyeIcon(props: IconProps) {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" {...props}>
+      <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  )
+}
+
+export function EyeOffIcon(props: IconProps) {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" {...props}>
+      <path d="M3 3l18 18M10.6 6.2A8.9 8.9 0 0112 6c6.1 0 9.5 6 9.5 6a16 16 0 01-3 3.8M6.2 6.8C3.8 8.3 2.5 12 2.5 12s3.4 6 9.5 6c1.1 0 2.1-.2 3-.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function PinIcon(props: IconProps) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...props}>

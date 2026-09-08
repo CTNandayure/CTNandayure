@@ -13,6 +13,7 @@
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-toast": "^1.2.23",
     "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/react-table": "^9.2.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-hook-form": "^7.87.0",
