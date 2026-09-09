@@ -7,6 +7,7 @@ export interface InstitutionalInfo {
   visionText: string
   aboutImageUrl: string | null
   contactImageUrl: string | null
+  heroImageUrl: string | null
   address: string
   phone: string
   email: string
