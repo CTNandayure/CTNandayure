@@ -45,7 +45,7 @@ export function ContactSection() {
 function ContactRow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="mt-0.5 flex h-9 w-9 flex-none items-center justify-center rounded-full bg-brand-navy/5 text-brand-green">{icon}</div>
+      <div className="mt-0.5 flex h-9 w-9 flex-none items-center justify-center rounded-full bg-brand-green/10 text-brand-green">{icon}</div>
       <span className="text-[15px] leading-relaxed text-brand-ink/80">{children}</span>
     </div>
   )

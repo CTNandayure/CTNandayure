@@ -18,6 +18,7 @@ const DEFAULTS = {
     'Ser el punto de referencia del turismo en Nandayure: un cantón reconocido por sus playas protegidas, su comunidad artística y una red de negocios locales sólida y visible para quien lo visita.',
   aboutImageUrl: null,
   contactImageUrl: null,
+  heroImageUrl: null,
   address: 'Carmona, cabecera del cantón de Nandayure, Guanacaste, Costa Rica',
   phone: '+506 2650-0000',
   email: 'info@camaraturismonandayure.cr',

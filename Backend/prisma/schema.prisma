@@ -6,6 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
 model InstitutionalInfo {
   id              Int      @id @default(autoincrement())
   aboutTitle      String
@@ -15,6 +16,7 @@ model InstitutionalInfo {
   visionText      String
   aboutImageUrl   String?
   contactImageUrl String?
+  heroImageUrl    String?
   address         String
   phone           String
   email           String
@@ -23,6 +25,7 @@ model InstitutionalInfo {
 
   @@map("institutional_info")
 }
+
 // Enums for User role
 enum Role {
   ADMIN
@@ -87,4 +90,3 @@ model PasswordResetToken {
   userId String
   user User @relation(fields: [userId], references: [id_person], onDelete: Cascade)
 }
-
