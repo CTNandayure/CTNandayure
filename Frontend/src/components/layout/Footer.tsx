@@ -18,11 +18,7 @@ export function Footer() {
     <footer className="bg-brand-navy px-6 pb-7 pt-14 text-white/75 md:px-12">
       <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-10 border-b border-white/10 pb-10 md:grid-cols-3">
         <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
-<<<<<<< HEAD
           <img src={logo} alt="Nandayure" className="h-8 w-auto max-w-none self-start rounded bg-white p-1" />
-=======
-          <img src={logo} alt="Nandayure" className="h-8 w-auto self-start rounded bg-white p-1" />
->>>>>>> e05724a7f403a0a2c55b2cc499b2bf15dc97af13
           <p className="max-w-[280px] text-sm leading-relaxed">
             Impulsando el turismo rural y comunitario en los seis distritos del cantón.
           </p>

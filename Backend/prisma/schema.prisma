@@ -26,7 +26,6 @@ model InstitutionalInfo {
   @@map("institutional_info")
 }
 
-<<<<<<< HEAD
 enum NewsStatus {
   BORRADOR
   PUBLICADO
@@ -46,8 +45,7 @@ model News {
 
   @@map("news")
 }
-=======
->>>>>>> e05724a7f403a0a2c55b2cc499b2bf15dc97af13
+
 // Enums for User role
 enum Role {
   ADMIN

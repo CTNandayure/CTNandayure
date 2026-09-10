@@ -15,11 +15,7 @@ export default function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-brand-paper">
       <aside className="flex w-64 flex-none flex-col gap-1 bg-brand-navy p-5 text-white">
-<<<<<<< HEAD
         <img src={logo} alt="Nandayure" className="mb-6 h-7 w-auto max-w-none self-start rounded bg-white p-1" />
-=======
-        <img src={logo} alt="Nandayure" className="mb-6 h-7 w-auto self-start rounded bg-white p-1" />
->>>>>>> e05724a7f403a0a2c55b2cc499b2bf15dc97af13
         <span className="mb-2 px-3 text-xs font-bold uppercase tracking-widest text-brand-yellow">
           Panel administrativo
         </span>
