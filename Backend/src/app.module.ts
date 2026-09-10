@@ -4,6 +4,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { InstitutionalInfoModule } from './institutional-info/institutional-info.module';
+import { NewsModule } from './news/news.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -15,6 +16,7 @@ import { MailModule } from './modules/mail/mail.module';
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     InstitutionalInfoModule,
+    NewsModule,
     UploadsModule,
     AuthModule,
     UserModule,

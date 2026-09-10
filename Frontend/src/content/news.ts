@@ -1,31 +1,28 @@
-import { useMockContent } from './hooks/useMockContent'
-import type { NewsItem } from './types'
+import { useCallback, useEffect, useState } from 'react'
+import { API_URL } from './api'
+import type { ContentStatus, NewsItem } from './types'
 
-// Contenido de ejemplo — reemplazar cuando el módulo de noticias tenga su propia API.
-const NEWS: NewsItem[] = [
-  {
-    id: 'convocatoria-2026',
-    date: '20 de agosto, 2026',
-    title: 'Convocatoria abierta para nuevos negocios afiliados 2026',
-    excerpt: 'La Cámara abre el proceso de afiliación para negocios de los seis distritos interesados en unirse al directorio oficial del cantón.',
-    imageUrl: null,
-  },
-  {
-    id: 'temporada-anidacion',
-    date: '3 de agosto, 2026',
-    title: 'Inicia la temporada de anidación en Camaronal',
-    excerpt: 'Entre julio y diciembre, tortugas lora y verde llegan a desovar al Refugio Nacional de Vida Silvestre Camaronal.',
-    imageUrl: null,
-  },
-  {
-    id: 'feria-islita',
-    date: '15 de julio, 2026',
-    title: 'Islita se prepara para su feria de arte comunitario',
-    excerpt: 'La comunidad artística de Islita, en el distrito de Bejuco, organiza actividades culturales abiertas a visitantes y vecinos.',
-    imageUrl: null,
-  },
-]
-
+// Only published items — the backend's GET /news already filters by status,
+// so nothing here has to know about drafts.
 export function useNews() {
-  return useMockContent(NEWS)
+  const [data, setData] = useState<NewsItem[]>([])
+  const [status, setStatus] = useState<ContentStatus>('loading')
+
+  const load = useCallback(async () => {
+    setStatus('loading')
+    try {
+      const res = await fetch(`${API_URL}/news`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      setData((await res.json()) as NewsItem[])
+      setStatus('ready')
+    } catch {
+      setStatus('error')
+    }
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  return { data, status, refetch: load }
 }
