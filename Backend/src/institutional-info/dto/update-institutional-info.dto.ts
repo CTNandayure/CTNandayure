@@ -32,6 +32,10 @@ export class UpdateInstitutionalInfoDto {
   contactImageUrl?: string;
 
   @IsOptional()
+  @IsUrl({ require_tld: false })
+  heroImageUrl?: string;
+
+  @IsOptional()
   @IsString()
   address?: string;
 

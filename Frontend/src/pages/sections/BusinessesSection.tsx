@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Alert, Button, Container, SectionHeading } from '../../components/ui'
+import { PinIcon } from '../../components/ui/icons'
 import { cn } from '../../lib/cn'
 import { useBusinesses } from '../../content/businesses'
 
@@ -15,7 +16,7 @@ export function BusinessesSection() {
   )
 
   return (
-    <section id="negocios" className="bg-brand-sand py-16 md:py-24">
+    <section id="negocios" className="bg-brand-paper py-16 md:py-24">
       <Container className="flex flex-col gap-8">
         <SectionHeading
           eyebrow="Directorio"
@@ -44,18 +45,21 @@ export function BusinessesSection() {
           ))}
         </div>
 
-        <div className="grid gap-px overflow-hidden rounded-2xl border border-brand-navy/15 bg-brand-navy/15 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((b) => (
-            <div key={b.id} className="flex flex-col bg-white transition-colors hover:bg-brand-paper">
-              <div className="flex aspect-[4/3] items-end bg-brand-teal p-4 text-xs font-semibold uppercase tracking-wide text-white">
-                {b.category}
-              </div>
-              <div className="flex flex-1 flex-col gap-2 p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <span className="font-semibold text-brand-navy">{b.name}</span>
-                  <span className="flex-none text-[11px] font-semibold uppercase tracking-wide text-brand-teal">{b.district}</span>
-                </div>
-                <p className="text-sm text-brand-ink/70">{b.description}</p>
+            <div key={b.id} className="flex items-center gap-4 rounded-2xl border border-brand-navy/10 bg-white p-4">
+              {b.imageUrl ? (
+                <img src={b.imageUrl} alt="" className="h-16 w-16 flex-none rounded-lg object-cover" />
+              ) : (
+                <div className="h-16 w-16 flex-none rounded-lg bg-brand-sand" />
+              )}
+              <div className="flex flex-col gap-1">
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-brand-green">{b.category}</span>
+                <span className="font-bold text-brand-navy">{b.name}</span>
+                <span className="flex items-center gap-1.5 text-xs text-brand-ink/50">
+                  <PinIcon className="h-3 w-3" />
+                  {b.district}
+                </span>
               </div>
             </div>
           ))}

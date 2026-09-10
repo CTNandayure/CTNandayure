@@ -1,4 +1,3 @@
-import { useInstitutionalInfo } from '../../content/hooks/useInstitutionalInfo'
 import logo from '../../assets/logo.png'
 
 const EXPLORE_LINKS = [
@@ -8,16 +7,22 @@ const EXPLORE_LINKS = [
   { href: '/#noticias', label: 'Noticias' },
 ]
 
-const DISTRICTS = ['Carmona', 'Santa Rita', 'Zapotal', 'San Pablo', 'Porvenir', 'Bejuco']
+const CAMARA_LINKS = [
+  { href: '/#quienes-somos', label: 'Quiénes somos' },
+  { href: '/afiliacion', label: 'Afiliación' },
+  { href: '/#contacto', label: 'Contacto' },
+]
 
 export function Footer() {
-  const { data: info } = useInstitutionalInfo()
-
   return (
     <footer className="bg-brand-navy px-6 pb-7 pt-14 text-white/75 md:px-12">
-      <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-10 border-b border-white/10 pb-10 md:grid-cols-4">
+      <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-10 border-b border-white/10 pb-10 md:grid-cols-3">
         <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
+<<<<<<< HEAD
           <img src={logo} alt="Nandayure" className="h-8 w-auto max-w-none self-start rounded bg-white p-1" />
+=======
+          <img src={logo} alt="Nandayure" className="h-8 w-auto self-start rounded bg-white p-1" />
+>>>>>>> e05724a7f403a0a2c55b2cc499b2bf15dc97af13
           <p className="max-w-[280px] text-sm leading-relaxed">
             Impulsando el turismo rural y comunitario en los seis distritos del cantón.
           </p>
@@ -33,23 +38,12 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <h5 className="text-sm font-semibold uppercase tracking-wider text-white">Distritos</h5>
-          {DISTRICTS.map((name) => (
-            <span key={name} className="text-sm">
-              {name}
-            </span>
+          <h5 className="text-sm font-semibold uppercase tracking-wider text-white">Cámara</h5>
+          {CAMARA_LINKS.map((link) => (
+            <a key={link.href} href={link.href} className="text-sm hover:text-brand-yellow">
+              {link.label}
+            </a>
           ))}
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <h5 className="text-sm font-semibold uppercase tracking-wider text-white">Contacto</h5>
-          {info && (
-            <>
-              <span className="text-sm">{info.phone}</span>
-              <span className="text-sm">{info.email}</span>
-            </>
-          )}
-          
         </div>
       </div>
 

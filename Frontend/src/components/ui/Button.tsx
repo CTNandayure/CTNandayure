@@ -1,20 +1,34 @@
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 
-export type ButtonVariant = 'primary' | 'accent' | 'outline' | 'text'
+export type ButtonVariant = 'primary' | 'accent' | 'outline' | 'outlineOnDark' | 'text'
+export type ButtonSize = 'md' | 'sm'
 
 const base =
   'inline-flex cursor-pointer items-center justify-center gap-2 font-semibold text-sm rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap'
 
-const variants: Record<ButtonVariant, string> = {
-  primary: `${base} bg-brand-green text-white px-7 py-3.5 hover:bg-brand-green-strong`,
-  accent: `${base} bg-brand-yellow text-brand-navy px-7 py-3.5 hover:brightness-95`,
-  outline: `${base} border-[1.5px] border-brand-navy/30 text-brand-navy px-7 py-3.5 hover:border-brand-navy`,
-  text: `${base} text-brand-navy border-b-2 border-brand-green px-0 py-0.5 rounded-none hover:text-brand-green`,
+// Colors only — never mix padding in here, or overriding size later becomes
+// a losing battle against Tailwind's class-order-dependent cascade.
+const colorVariants: Record<Exclude<ButtonVariant, 'text'>, string> = {
+  primary: 'bg-brand-green text-white hover:bg-brand-green-strong',
+  accent: 'bg-brand-yellow text-brand-navy hover:brightness-95',
+  outline: 'border-[1.5px] border-brand-navy/30 text-brand-navy hover:border-brand-navy',
+  // for buttons placed over a photo or a dark/navy section, e.g. the hero
+  outlineOnDark: 'border-[1.5px] border-white/60 text-white hover:border-white',
 }
+
+// Padding only — kept separate from color so a compact navbar button and a
+// big hero CTA can share the same variant with a different size.
+const sizes: Record<ButtonSize, string> = {
+  md: 'px-7 py-3.5',
+  sm: 'px-5 py-2.5',
+}
+
+const textVariant = `${base} text-brand-navy border-b-2 border-brand-green px-0 py-0.5 rounded-none hover:text-brand-green`
 
 type CommonProps = {
   variant?: ButtonVariant
+  size?: ButtonSize
   className?: string
   children: React.ReactNode
 }
@@ -29,8 +43,9 @@ export type ButtonProps = ButtonAsButton | ButtonAsLink
 
 // href with a "#" (in-page or cross-page anchor) renders a plain <a> so the
 // browser handles the scroll; a route-shaped href renders a router <Link>.
-export function Button({ variant = 'primary', className, children, ...props }: ButtonProps) {
-  const classes = cn(variants[variant], className)
+export function Button({ variant = 'primary', size = 'md', className, children, ...props }: ButtonProps) {
+  const classes =
+    variant === 'text' ? cn(textVariant, className) : cn(base, colorVariants[variant], sizes[size], className)
 
   if ('href' in props && props.href) {
     const { href, ...rest } = props

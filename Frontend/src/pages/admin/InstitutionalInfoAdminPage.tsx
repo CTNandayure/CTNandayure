@@ -10,6 +10,7 @@ interface InstitutionalInfoFormValues {
   historyText: string
   missionText: string
   visionText: string
+  heroImageUrl: string | null
   aboutImageUrl: string | null
   contactImageUrl: string | null
   address: string
@@ -33,6 +34,7 @@ export default function InstitutionalInfoAdminPage() {
   useEffect(() => {
     if (data) {
       reset({
+        heroImageUrl: data.heroImageUrl,
         aboutTitle: data.aboutTitle,
         aboutText: data.aboutText,
         historyText: data.historyText,
@@ -79,10 +81,17 @@ export default function InstitutionalInfoAdminPage() {
     <div className="max-w-2xl">
       <h1 className="text-2xl font-bold text-brand-navy">Información institucional</h1>
       <p className="mt-1 text-brand-ink/60">
-        Este contenido alimenta las secciones "Quiénes somos", "Misión y visión" y "Contacto" de la landing pública.
+        Este contenido alimenta el hero y las secciones "Quiénes somos", "Misión y visión" y "Contacto" de la landing
+        pública.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 flex flex-col gap-5 rounded-2xl bg-white p-8 shadow-sm">
+        <Controller
+          name="heroImageUrl"
+          control={control}
+          render={({ field }) => <ImageUpload label="Foto de portada (hero)" value={field.value} onChange={field.onChange} />}
+        />
+
         <FormField label="Título de la sección Quiénes somos" htmlFor="aboutTitle" error={errors.aboutTitle?.message}>
           <Input id="aboutTitle" {...register('aboutTitle', { required: 'Este campo es obligatorio' })} />
         </FormField>
