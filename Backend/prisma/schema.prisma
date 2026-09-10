@@ -23,6 +23,26 @@ model InstitutionalInfo {
 
   @@map("institutional_info")
 }
+
+enum NewsStatus {
+  BORRADOR
+  PUBLICADO
+}
+
+model News {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  title       String
+  excerpt     String
+  content     String
+  imageUrl    String?
+  status      NewsStatus @default(BORRADOR)
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("news")
+}
 // Enums for User role
 enum Role {
   ADMIN

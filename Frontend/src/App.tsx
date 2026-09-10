@@ -4,6 +4,9 @@ import AdminLayout from './pages/admin/AdminLayout'
 import InstitutionalInfoAdminPage from './pages/admin/InstitutionalInfoAdminPage'
 import AffiliationPage from './pages/AffiliationPage'
 import LandingPage from './pages/LandingPage'
+import NewsDetailPage from './pages/NewsDetailPage'
+import NewsAdminPage from './modules/news/pages/NewsAdminPage'
+import NewsFormPage from './modules/news/pages/NewsFormPage'
 import LoginPage from './modules/users/pages/LoginPage'
 import ForgotPasswordPage from './modules/users/pages/ForgotPasswordPage'
 import ResetPasswordPage from './modules/users/pages/ResetPasswordPage'
@@ -19,6 +22,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/afiliacion" element={<AffiliationPage />} />
+      <Route path="/noticias/:slug" element={<NewsDetailPage />} />
 <Route path="/users/login" element={<LoginPage />} />
       <Route path="/users/recuperar" element={<ForgotPasswordPage />} />
       <Route path="/users/restablecer" element={<ResetPasswordPage />} />
@@ -33,6 +37,9 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminHome />} />
           <Route path="informacion-institucional" element={<InstitutionalInfoAdminPage />} />
+          <Route path="noticias" element={<NewsAdminPage />} />
+          <Route path="noticias/nueva" element={<NewsFormPage />} />
+          <Route path="noticias/:id/editar" element={<NewsFormPage />} />
           <Route path="usuarios" element={<UsersAdminPage />} />
         </Route>
       </Route>
