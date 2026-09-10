@@ -6,9 +6,6 @@ import { AppService } from './app.service';
 import { InstitutionalInfoModule } from './institutional-info/institutional-info.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UploadsModule } from './uploads/uploads.module';
-
-@Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, InstitutionalInfoModule, UploadsModule],
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { MailModule } from './modules/mail/mail.module';
@@ -17,6 +14,8 @@ import { MailModule } from './modules/mail/mail.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    InstitutionalInfoModule,
+    UploadsModule,
     AuthModule,
     UserModule,
     MailModule,

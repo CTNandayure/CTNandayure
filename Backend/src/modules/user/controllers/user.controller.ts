@@ -10,7 +10,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { UserService } from '../services';
-import { UpdateUserStatusDto } from '../dtos';
+import { UpdateUserDto, UpdateUserStatusDto } from '../dtos';
 import { UserEntity } from '../entities';
 import { CreateUserDto } from '../dtos';
 import { JwtAuthGuard } from '@/modules/auth/guards';
@@ -39,8 +39,8 @@ export class UserController {
   @Get(':id')
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
-  async getUserById(@Param('id_person') id_person: string): Promise<UserEntity> {
-    return this.userService.getUserById(id_person);
+  async getUserById(@Param('id') id: string): Promise<UserEntity> {
+    return this.userService.getUserById(id);
   }
 
   /**
@@ -54,16 +54,30 @@ export class UserController {
   }
 
   /**
+   * Update user account details (ADMIN only)
+   */
+  @Patch(':id')
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    return this.userService.updateUser(id, updateUserDto);
+  }
+
+  /**
    * Update user status (ADMIN only)
    */
   @Patch(':id/status')
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.OK)
-async updateUserStatus(
-    @Param('id_person') id_person: string,
-    updateUserStatusDto: UpdateUserStatusDto,
+  async updateUserStatus(
+    @Param('id') id: string,
+    @Body() updateUserStatusDto: UpdateUserStatusDto,
   ): Promise<UserEntity> {
-    return this.userService.updateUserStatus(id_person, updateUserStatusDto);
+    return this.userService.updateUserStatus(id, updateUserStatusDto);
   }
 }

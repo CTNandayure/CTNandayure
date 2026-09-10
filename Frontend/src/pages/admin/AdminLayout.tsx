@@ -5,7 +5,10 @@ import logo from '../../assets/logo.png'
 
 // Cada módulo admin nuevo agrega una entrada acá — es el único lugar que
 // hay que tocar para que aparezca en el menú.
-const ADMIN_NAV = [{ to: '/admin/informacion-institucional', label: 'Información institucional' }]
+const ADMIN_NAV = [
+  { to: '/admin/informacion-institucional', label: 'Información institucional' },
+  { to: '/admin/usuarios', label: 'Usuarios' },
+]
 
 export default function AdminLayout() {
   return (

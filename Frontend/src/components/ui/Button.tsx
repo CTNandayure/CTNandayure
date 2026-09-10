@@ -5,7 +5,7 @@ export type ButtonVariant = 'primary' | 'accent' | 'outline' | 'outlineOnDark' |
 export type ButtonSize = 'md' | 'sm'
 
 const base =
-  'inline-flex items-center justify-center gap-2 font-semibold text-sm rounded-lg transition-colors disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap'
+  'inline-flex cursor-pointer items-center justify-center gap-2 font-semibold text-sm rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap'
 
 // Colors only — never mix padding in here, or overriding size later becomes
 // a losing battle against Tailwind's class-order-dependent cascade.

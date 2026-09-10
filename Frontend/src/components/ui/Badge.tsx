@@ -1,12 +1,13 @@
 import { cn } from '../../lib/cn'
 
-export type BadgeColor = 'navy' | 'teal' | 'green' | 'yellow'
+export type BadgeColor = 'navy' | 'teal' | 'green' | 'yellow' | 'red'
 
 const colors: Record<BadgeColor, string> = {
   navy: 'bg-brand-navy text-white',
   teal: 'bg-brand-teal text-white',
   green: 'bg-brand-green text-white',
   yellow: 'bg-brand-yellow text-brand-navy',
+  red: 'bg-red-500 text-white',
 }
 
 export function Badge({ color = 'teal', children }: { color?: BadgeColor; children: React.ReactNode }) {
