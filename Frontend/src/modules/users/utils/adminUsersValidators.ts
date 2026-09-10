@@ -31,7 +31,6 @@ export function validatePassword(value: string) {
   if (!value) return 'La contraseña es obligatoria'
   if (value.length < 12) return 'La contraseña debe tener al menos 12 caracteres'
   if (value.length > 128) return 'La contraseña no debe exceder 128 caracteres'
-  if (/password|12345678|qwerty|admin|letmein|welcome|monkey/i.test(value)) return 'La contraseña es demasiado común'
   return ''
 }
 
