@@ -29,7 +29,7 @@ export function Navbar() {
           </span>
         </a>
 
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-4 lg:flex">
           {NAV_LINKS.map((link) => (
             <a key={link.href} href={link.href} className="text-sm font-medium text-white/85 hover:text-white">
               {link.label}
@@ -37,10 +37,19 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden lg:block">
-          <Button href="/afiliacion" variant="accent" size="sm">
-            Afíliese
-          </Button>
+        <div className="hidden items-center gap-3 lg:flex">
+          {isAuthenticated ? (
+            <UserMenu />
+          ) : (
+            <>
+              <Button href="/afiliacion" variant="accent" size="sm">
+                Afíliese
+              </Button>
+              <Button href="/users/login" variant="primary" size="sm">
+                Iniciar sesión
+              </Button>
+            </>
+          )}
         </div>
 
         <button
