@@ -1,11 +1,11 @@
 export interface IMailService {
-  sendActivationEmail(
-    email: string,
-    activationToken: string,
-  ): Promise<void>;
+  sendActivationEmail(email: string, activationToken: string): Promise<void>;
 
-  sendPasswordResetEmail(
+  sendPasswordResetEmail(email: string, resetToken: string): Promise<void>;
+
+  sendRejectionEmail(
     email: string,
-    resetToken: string,
+    businessName: string,
+    reason: string,
   ): Promise<void>;
 }

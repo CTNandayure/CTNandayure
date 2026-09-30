@@ -87,6 +87,7 @@ model User {
 
   activationTokens     ActivationToken[]
   passwordResetTokens  PasswordResetToken[]
+  business             Business?
 }
 
 // ActivationToken entity - For account activation flow
@@ -109,4 +110,119 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
   userId String
   user User @relation(fields: [userId], references: [id_person], onDelete: Cascade)
+}
+
+// Business request/application status
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Business visibility status
+enum BusinessStatus {
+  ACTIVE
+  INACTIVE
+}
+
+// Business category
+enum BusinessCategory {
+  LODGING        // Hospedaje
+  FOOD           // Alimentación
+  TRANSPORT      // Transporte
+  CRAFTS         // Artesanías
+  TOURS          // Tours
+  AGROTOURISM    // Agroturismo
+  COMMERCE       // Comercio
+}
+
+// District enum
+enum District {
+  CARMONA
+  SANTA_RITA
+  ZAPOTAL
+  SAN_PABLO
+  PORVENIR
+  BEJUCO
+}
+
+// Business affiliation request
+model BusinessRequest {
+  id              String          @id @default(cuid())
+
+  // Business info (Step 1)
+  businessName    String          @db.VarChar(150)
+  categories      BusinessCategory[]
+  district        District
+  description     String          @db.VarChar(2000)
+
+  // Contact & location (Step 2)
+  phone           String          @db.VarChar(20)   // Business phone
+  email           String          @db.VarChar(100)
+  address         String          @db.VarChar(500)
+  latitude        Float?
+  longitude       Float?
+  facebookUrl     String?         @db.VarChar(255)
+  instagramUrl    String?         @db.VarChar(255)
+  scheduleText    String          @db.VarChar(500)
+
+  // Multimedia (Step 3)
+  coverImageUrl   String          @db.VarChar(500)
+  galleryUrls     String[]
+
+  // Documents (Step 4)
+  documentUrls    String[]
+
+  // Personal info / applicant (Step 5)
+  applicantName           String  @db.VarChar(50)
+  applicantFirstLastname  String  @db.VarChar(100)
+  applicantSecondLastname String  @db.VarChar(100)
+  applicantPhone          String  @db.VarChar(20)   // Personal phone
+
+  // Request status
+  requestStatus   RequestStatus   @default(PENDING)
+  rejectionReason String?         @db.VarChar(1000)
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  business        Business?
+
+  @@map("business_requests")
+}
+
+// Affiliated business
+model Business {
+  id              String          @id @default(cuid())
+
+  businessName    String          @db.VarChar(150)
+  categories      BusinessCategory[]
+  district        District
+  description     String          @db.VarChar(2000)
+
+  phone           String          @db.VarChar(20)
+  email           String          @db.VarChar(100)
+  address         String          @db.VarChar(500)
+  latitude        Float?
+  longitude       Float?
+  facebookUrl     String?         @db.VarChar(255)
+  instagramUrl    String?         @db.VarChar(255)
+  scheduleText    String          @db.VarChar(500)
+
+  coverImageUrl   String          @db.VarChar(500)
+  galleryUrls     String[]
+  documentUrls    String[]
+
+  businessStatus  BusinessStatus  @default(ACTIVE)
+
+  requestId       String?         @unique
+  request         BusinessRequest? @relation(fields: [requestId], references: [id])
+
+  userId          String?         @unique
+  user            User?           @relation(fields: [userId], references: [id_person])
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("businesses")
 }

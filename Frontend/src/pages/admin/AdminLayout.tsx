@@ -8,6 +8,7 @@ import logo from '../../assets/logo.png'
 const ADMIN_NAV = [
   { to: '/admin/informacion-institucional', label: 'Información institucional' },
   { to: '/admin/noticias', label: 'Noticias' },
+  { to: '/admin/negocios', label: 'Negocios' },
   { to: '/admin/usuarios', label: 'Usuarios' },
 ]
 

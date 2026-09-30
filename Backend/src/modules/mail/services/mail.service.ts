@@ -5,6 +5,7 @@ import { IMailService } from '../interfaces';
 import {
   activationEmailTemplate,
   passwordResetEmailTemplate,
+  rejectionEmailTemplate,
 } from '../templates';
 
 @Injectable()
@@ -70,7 +71,8 @@ export class MailService implements IMailService {
       await this.sendEmail(email, subject, html);
       this.logger.debug(`Activation email sent to ${email}`);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(
         `Error sending activation email to ${email}: ${errorMessage}`,
       );
@@ -105,9 +107,32 @@ export class MailService implements IMailService {
       await this.sendEmail(email, subject, html);
       this.logger.debug(`Password reset email sent to ${email}`);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(
         `Error sending password reset email to ${email}: ${errorMessage}`,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Send rejection email for business application
+   */
+  async sendRejectionEmail(
+    email: string,
+    businessName: string,
+    reason: string,
+  ): Promise<void> {
+    try {
+      const { subject, html } = rejectionEmailTemplate(businessName, reason);
+      await this.sendEmail(email, subject, html);
+      this.logger.debug(`Rejection email sent to ${email}`);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Error sending rejection email to ${email}: ${errorMessage}`,
       );
       throw error;
     }
@@ -142,7 +167,8 @@ export class MailService implements IMailService {
       const info = await this.transporter.sendMail(mailOptions);
       this.logger.debug(`Email sent: ${info.messageId}`);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to send email: ${errorMessage}`);
       throw error;
     }

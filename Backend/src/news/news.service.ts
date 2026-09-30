@@ -65,7 +65,9 @@ export class NewsService {
       where: { id },
       data: {
         ...dto,
-        ...(dto.content !== undefined ? { content: sanitizeNewsContent(dto.content) } : {}),
+        ...(dto.content !== undefined
+          ? { content: sanitizeNewsContent(dto.content) }
+          : {}),
       },
     });
   }
@@ -77,7 +79,9 @@ export class NewsService {
       data: {
         status: dto.status,
         publishedAt:
-          dto.status === NewsStatus.PUBLICADO ? (existing.publishedAt ?? new Date()) : existing.publishedAt,
+          dto.status === NewsStatus.PUBLICADO
+            ? (existing.publishedAt ?? new Date())
+            : existing.publishedAt,
       },
     });
   }

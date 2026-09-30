@@ -35,11 +35,18 @@ export interface Activity {
 
 export interface Business {
   id: string
-  name: string
-  category: string
+  businessName: string
+  categories: string[]
   district: string
   description: string
-  imageUrl: string | null
+  phone: string
+  email: string
+  address: string
+  coverImageUrl: string
+  galleryUrls: string[]
+  facebookUrl: string | null
+  instagramUrl: string | null
+  scheduleText: string
 }
 
 export type NewsStatus = 'BORRADOR' | 'PUBLICADO'

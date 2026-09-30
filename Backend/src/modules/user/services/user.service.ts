@@ -29,14 +29,8 @@ export class UserService {
    * User starts in PENDIENTE_ACTIVACION status and activation email is sent
    */
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const {
-      name,
-      first_lastname,
-      second_lastname,
-      phone,
-      email,
-      role,
-    } = createUserDto;
+    const { name, first_lastname, second_lastname, phone, email, role } =
+      createUserDto;
 
     // Check if email already exists
     const existingUser = await this.prisma.user.findUnique({
@@ -222,7 +216,9 @@ export class UserService {
       },
     });
 
-    this.logger.debug(`User ${id_person} status updated to ${updateUserStatusDto.status}`);
+    this.logger.debug(
+      `User ${id_person} status updated to ${updateUserStatusDto.status}`,
+    );
     return new UserEntity(updatedUser);
   }
 
@@ -312,7 +308,8 @@ export class UserService {
     try {
       return await argon2.verify(hash, password);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Password verification error: ${errorMessage}`);
       return false;
     }
