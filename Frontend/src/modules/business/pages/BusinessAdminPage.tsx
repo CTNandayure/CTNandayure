@@ -3,7 +3,7 @@ import { Badge, Button, Input, Modal, Select, TableActionButton, useToast } from
 import { businessService } from '../services/businessService'
 import { DISTRICT_LABELS, CATEGORY_LABELS, BUSINESS_STATUS_LABELS } from '../utils/constants'
 import { AffiliationWizard } from '../components/AffiliationWizard/AffiliationWizard'
-import { RequestDetailModal } from '../components/RequestDetailModal/RequestDetailModal'
+import { BusinessDetailModal } from '../components/RequestDetailModal/BusinessDetailModal'
 import { RejectRequestModal } from '../components/RejectRequestModal/RejectRequestModal'
 import type { BusinessRequestRecord, BusinessRecord, BusinessStatus } from '../types/business.types'
 import {
@@ -26,27 +26,23 @@ export default function BusinessAdminPage() {
   const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState<AdminTab>('requests')
 
-  // Data
   const [requests, setRequests] = useState<BusinessRequestRecord[]>([])
   const [businesses, setBusinesses] = useState<BusinessRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Filters
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 
-  // Modals
   const [wizardOpen, setWizardOpen] = useState(false)
   const [detailRequest, setDetailRequest] = useState<BusinessRequestRecord | null>(null)
-  const [rejectingRequest, setRejectingRequest] = useState<BusinessRequestRecord | null>(null)
   const [detailBusiness, setDetailBusiness] = useState<BusinessRecord | null>(null)
+  const [rejectingRequest, setRejectingRequest] = useState<BusinessRequestRecord | null>(null)
+  const [confirmApprove, setConfirmApprove] = useState<BusinessRequestRecord | null>(null)
   const [confirmStatusBiz, setConfirmStatusBiz] = useState<BusinessRecord | null>(null)
 
-  // Sorting
   const [requestSorting, setRequestSorting] = useState<SortingState>([])
   const [businessSorting, setBusinessSorting] = useState<SortingState>([])
 
-  // --- Data loading ---
   const loadRequests = async () => {
     try {
       setIsLoading(true)
@@ -76,7 +72,6 @@ export default function BusinessAdminPage() {
     else loadBusinesses()
   }, [activeTab])
 
-  // --- Filtered data ---
   const filteredRequests = useMemo(() => {
     const q = search.trim().toLowerCase()
     return requests.filter((r) => {
@@ -93,7 +88,6 @@ export default function BusinessAdminPage() {
     })
   }, [businesses, search, statusFilter])
 
-  // --- Stats ---
   const stats = useMemo(() => ({
     pendingRequests: requests.length,
     totalBusinesses: businesses.length,
@@ -101,8 +95,8 @@ export default function BusinessAdminPage() {
     inactiveBusinesses: businesses.filter((b) => b.businessStatus === 'INACTIVE').length,
   }), [requests, businesses])
 
-  // --- Actions ---
   const handleApprove = async (id: string) => {
+    setConfirmApprove(null)
     try {
       await businessService.approveRequest(id)
       showToast({ variant: 'success', title: 'Solicitud aprobada', description: 'Se creó el negocio y la cuenta del usuario. Se enviará un correo de activación.' })
@@ -141,7 +135,6 @@ export default function BusinessAdminPage() {
     }
   }
 
-  // --- Requests table ---
   const requestColumns = useMemo<any[]>(() => [
     {
       accessorKey: 'businessName',
@@ -180,7 +173,7 @@ export default function BusinessAdminPage() {
       cell: ({ row }: any) => (
         <div className="flex gap-1">
           <TableActionButton variant="view" onClick={() => setDetailRequest(row.original)}>Ver</TableActionButton>
-          <TableActionButton variant="activate" onClick={() => handleApprove(row.original.id)}>Aceptar</TableActionButton>
+          <TableActionButton variant="activate" onClick={() => setConfirmApprove(row.original)}>Aceptar</TableActionButton>
           <TableActionButton variant="deactivate" onClick={() => setRejectingRequest(row.original)}>Rechazar</TableActionButton>
         </div>
       ),
@@ -208,7 +201,6 @@ export default function BusinessAdminPage() {
     onPaginationChange: setReqPagination,
   })
 
-  // --- Businesses table ---
   const businessColumns = useMemo<any[]>(() => [
     {
       accessorKey: 'businessName',
@@ -292,7 +284,6 @@ export default function BusinessAdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-brand-navy">Negocios</h1>
@@ -301,7 +292,6 @@ export default function BusinessAdminPage() {
         <Button variant="primary" onClick={() => setWizardOpen(true)}>Registrar negocio</Button>
       </div>
 
-      {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
         <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-brand-navy/10">
           <p className="text-sm text-brand-ink/60">Solicitudes pendientes</p>
@@ -321,7 +311,6 @@ export default function BusinessAdminPage() {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-brand-navy/15 pb-1">
         {([['requests', 'Solicitudes'], ['businesses', 'Negocios afiliados']] as const).map(([key, label]) => (
           <button
@@ -329,7 +318,7 @@ export default function BusinessAdminPage() {
             type="button"
             onClick={() => { setActiveTab(key); setSearch(''); setStatusFilter('all') }}
             className={cn(
-              '-mb-px border-b-2 px-4 pb-3 pt-2 text-sm font-semibold transition-colors',
+              '-mb-px border-b-2 px-4 pb-3 pt-2 text-sm font-semibold transition-colors cursor-pointer',
               activeTab === key ? 'border-brand-green text-brand-navy' : 'border-transparent text-brand-ink/60 hover:text-brand-navy',
             )}
           >
@@ -338,7 +327,6 @@ export default function BusinessAdminPage() {
         ))}
       </div>
 
-      {/* Filters */}
       <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brand-navy/10">
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
           <Input
@@ -358,7 +346,6 @@ export default function BusinessAdminPage() {
         </div>
       </div>
 
-      {/* Table */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12 text-brand-ink/50">Cargando...</div>
       ) : (
@@ -406,7 +393,6 @@ export default function BusinessAdminPage() {
             <div className="py-12 text-center text-brand-ink/50">No hay registros</div>
           )}
 
-          {/* Pagination */}
           {currentTable.getPageCount() > 1 && (
             <div className="flex items-center justify-between border-t border-brand-navy/10 px-4 py-3">
               <span className="text-xs text-brand-ink/50">
@@ -421,7 +407,6 @@ export default function BusinessAdminPage() {
         </div>
       )}
 
-      {/* Wizard modal for admin direct creation */}
       <Modal
         size="xl"
         open={wizardOpen}
@@ -439,16 +424,22 @@ export default function BusinessAdminPage() {
         />
       </Modal>
 
-      {/* Request detail modal */}
       {detailRequest && (
-        <RequestDetailModal
-          request={detailRequest}
+        <BusinessDetailModal
           open={Boolean(detailRequest)}
           onClose={() => setDetailRequest(null)}
+          request={detailRequest}
         />
       )}
 
-      {/* Reject request modal */}
+      {detailBusiness && (
+        <BusinessDetailModal
+          open={Boolean(detailBusiness)}
+          onClose={() => setDetailBusiness(null)}
+          business={detailBusiness}
+        />
+      )}
+
       {rejectingRequest && (
         <RejectRequestModal
           request={rejectingRequest}
@@ -458,72 +449,23 @@ export default function BusinessAdminPage() {
         />
       )}
 
-      {/* Business detail modal */}
-      {detailBusiness && (
-        <Modal
-          size="lg"
-          open={Boolean(detailBusiness)}
-          onOpenChange={(open) => !open && setDetailBusiness(null)}
-          title={detailBusiness.businessName}
-          description="Detalle del negocio afiliado"
-          footer={
-            <div className="flex justify-start">
-              <Button variant="outline" onClick={() => setDetailBusiness(null)}>Cerrar</Button>
-            </div>
-          }
-        >
-          <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
-            <div className="rounded-xl bg-brand-paper p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Distrito</dt>
-              <dd className="mt-1 text-sm font-medium text-brand-navy">{DISTRICT_LABELS[detailBusiness.district]}</dd>
-            </div>
-            <div className="rounded-xl bg-brand-paper p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Categorías</dt>
-              <dd className="mt-1 flex flex-wrap gap-1">{detailBusiness.categories.map((c) => <Badge key={c} color="teal">{CATEGORY_LABELS[c]}</Badge>)}</dd>
-            </div>
-            <div className="rounded-xl bg-brand-paper p-4 sm:col-span-2">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Descripción</dt>
-              <dd className="mt-1 text-sm text-brand-ink/80">{detailBusiness.description}</dd>
-            </div>
-            <div className="rounded-xl bg-brand-paper p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Teléfono</dt>
-              <dd className="mt-1 text-sm font-medium text-brand-navy">{detailBusiness.phone}</dd>
-            </div>
-            <div className="rounded-xl bg-brand-paper p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Correo</dt>
-              <dd className="mt-1 text-sm font-medium text-brand-navy break-all">{detailBusiness.email}</dd>
-            </div>
-            <div className="rounded-xl bg-brand-paper p-4 sm:col-span-2">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Dirección</dt>
-              <dd className="mt-1 text-sm text-brand-ink/80">{detailBusiness.address}</dd>
-            </div>
-            <div className="rounded-xl bg-brand-paper p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Estado</dt>
-              <dd className="mt-1"><Badge color={BUSINESS_STATUS_COLORS[detailBusiness.businessStatus]}>{BUSINESS_STATUS_LABELS[detailBusiness.businessStatus]}</Badge></dd>
-            </div>
-            <div className="rounded-xl bg-brand-paper p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Fecha de afiliación</dt>
-              <dd className="mt-1 text-sm font-medium text-brand-navy">{new Date(detailBusiness.createdAt).toLocaleString('es-CR')}</dd>
-            </div>
-          </dl>
-          {detailBusiness.coverImageUrl && (
-            <div className="mt-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Portada</p>
-              <img src={detailBusiness.coverImageUrl} alt="" className="h-40 w-auto rounded-lg object-cover" />
-            </div>
-          )}
-          {detailBusiness.galleryUrls.length > 0 && (
-            <div className="mt-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Galería</p>
-              <div className="flex flex-wrap gap-2">
-                {detailBusiness.galleryUrls.map((url, i) => <img key={i} src={url} alt="" className="h-20 w-20 rounded-lg object-cover" />)}
-              </div>
-            </div>
-          )}
-        </Modal>
-      )}
+      <Modal
+        open={Boolean(confirmApprove)}
+        onOpenChange={(open) => { if (!open) setConfirmApprove(null) }}
+        title="Aprobar solicitud"
+        description="Al aprobar, se creará el negocio y la cuenta del propietario, y se le enviará un correo de activación."
+        footer={
+          <div className="flex items-center justify-between gap-3">
+            <Button variant="outline" onClick={() => setConfirmApprove(null)}>Cancelar</Button>
+            <Button variant="primary" onClick={() => confirmApprove && handleApprove(confirmApprove.id)}>Aprobar</Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-brand-ink/70">
+          {confirmApprove ? `¿Desea aprobar la solicitud de "${confirmApprove.businessName}"?` : ''}
+        </p>
+      </Modal>
 
-      {/* Confirm status change modal */}
       <Modal
         open={Boolean(confirmStatusBiz)}
         onOpenChange={(open) => { if (!open) setConfirmStatusBiz(null) }}

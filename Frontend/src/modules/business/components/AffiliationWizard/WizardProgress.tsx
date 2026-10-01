@@ -6,7 +6,7 @@ interface WizardProgressProps {
   completedSteps: number[]
 }
 
-const STEPS = ['Negocio', 'Contacto', 'Fotos', 'Documentos', 'Datos personales', 'Revisión']
+const STEPS = ['Datos personales', 'Negocio', 'Contacto', 'Fotos', 'Documentos', 'Revisión']
 
 export const WizardProgress: React.FC<WizardProgressProps> = ({ currentStep, completedSteps }) => {
   return (
@@ -23,8 +23,8 @@ export const WizardProgress: React.FC<WizardProgressProps> = ({ currentStep, com
               <div
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-colors",
-                  isCompleted ? "bg-brand-green text-white border-brand-green" : 
-                  isCurrent ? "bg-white text-brand-green border-brand-green" : 
+                  isCompleted ? "bg-brand-green text-white border-brand-green" :
+                  isCurrent ? "bg-white text-brand-green border-brand-green" :
                   "bg-white text-gray-400 border-gray-300"
                 )}
               >

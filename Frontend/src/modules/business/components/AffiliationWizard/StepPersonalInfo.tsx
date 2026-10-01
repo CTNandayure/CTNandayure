@@ -1,5 +1,5 @@
 import React from 'react'
-import { FormField, Input, Alert } from '../../../../components/ui'
+import { FormField, Input } from '../../../../components/ui'
 
 interface StepPersonalInfoProps {
   formData: any
@@ -10,9 +10,13 @@ interface StepPersonalInfoProps {
 export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ formData, errors, updateField }) => {
   return (
     <div className="space-y-6">
-      <Alert variant="info" title="Información importante">
-        El correo electrónico ingresado en el paso de Contacto será utilizado para crear su cuenta y enviarle la respuesta de su solicitud.
-      </Alert>
+      <div className="rounded-xl border border-brand-teal/30 bg-brand-teal/5 p-4">
+        <p className="text-sm text-brand-navy/80">
+          <span className="font-semibold text-brand-teal">Paso 1 de 6 — Datos personales.</span>{' '}
+          Ingrese su información personal como solicitante. El correo electrónico de este paso será
+          utilizado para crear su cuenta y enviarle la respuesta de su solicitud.
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Nombre" error={errors.applicantName} htmlFor="applicantName">
@@ -53,6 +57,20 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ formData, er
           />
         </FormField>
       </div>
+
+      <FormField
+        label="Correo electrónico personal"
+        error={errors.applicantEmail}
+        htmlFor="applicantEmail"
+      >
+        <Input
+          id="applicantEmail"
+          type="email"
+          value={formData.applicantEmail || ''}
+          onChange={(e) => updateField('applicantEmail', e.target.value)}
+          placeholder="Ej: juan@correo.com"
+        />
+      </FormField>
     </div>
   )
 }

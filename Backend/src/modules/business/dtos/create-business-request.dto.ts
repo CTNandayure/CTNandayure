@@ -45,8 +45,8 @@ export class CreateBusinessRequestDto {
   @MaxLength(20, { message: 'El teléfono no puede exceder 20 caracteres' })
   phone!: string;
 
-  @IsEmail({}, { message: 'El correo electrónico no es válido' })
-  @IsNotEmpty({ message: 'El correo electrónico es requerido' })
+  @IsEmail({}, { message: 'El correo electrónico del negocio no es válido' })
+  @IsNotEmpty({ message: 'El correo electrónico del negocio es requerido' })
   @MaxLength(100, { message: 'El correo electrónico no puede exceder 100 caracteres' })
   email!: string;
 
@@ -120,4 +120,9 @@ export class CreateBusinessRequestDto {
   @IsNotEmpty({ message: 'El teléfono del solicitante es requerido' })
   @MaxLength(20, { message: 'El teléfono no puede exceder 20 caracteres' })
   applicantPhone!: string;
+
+  @IsEmail({}, { message: 'El correo electrónico del solicitante no es válido' })
+  @IsNotEmpty({ message: 'El correo electrónico del solicitante es requerido' })
+  @MaxLength(100, { message: 'El correo electrónico no puede exceder 100 caracteres' })
+  applicantEmail!: string;
 }

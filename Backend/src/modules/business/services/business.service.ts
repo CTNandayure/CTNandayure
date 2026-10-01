@@ -76,6 +76,7 @@ export class BusinessService {
         applicantFirstLastname,
         applicantSecondLastname,
         applicantPhone,
+        applicantEmail,
         requestStatus,
         rejectionReason,
         createdAt,
@@ -83,13 +84,12 @@ export class BusinessService {
         id: reqId,
         ...businessData
       } = updatedRequest;
-
       const user = await this.userService.createUser({
         name: applicantName,
         first_lastname: applicantFirstLastname,
         second_lastname: applicantSecondLastname,
         phone: applicantPhone,
-        email: businessData.email,
+        email: applicantEmail,
         role: 'NEGOCIO',
       });
 
@@ -112,15 +112,11 @@ export class BusinessService {
     if (request.requestStatus !== 'PENDING') {
       throw new BadRequestException('La solicitud no está pendiente');
     }
-
-    // 1. Enviar primero el correo informando el rechazo y el motivo
     await this.mailService.sendRejectionEmail(
-      request.email,
+      request.applicantEmail,
       request.businessName,
       dto.reason,
     );
-
-    // 2. Eliminar completamente la solicitud de la base de datos
     await (this.prisma as any).businessRequest.delete({
       where: { id },
     });
@@ -130,7 +126,14 @@ export class BusinessService {
 
   async getBusinesses() {
     return (this.prisma as any).business.findMany({
-      include: { request: true },
+      include: {
+        request: true,
+        user: {
+          include: {
+            person: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -194,15 +197,15 @@ export class BusinessService {
         applicantFirstLastname,
         applicantSecondLastname,
         applicantPhone,
+        applicantEmail,
         ...businessData
       } = dto;
-
       const user = await this.userService.createUser({
         name: applicantName,
         first_lastname: applicantFirstLastname,
         second_lastname: applicantSecondLastname,
         phone: applicantPhone,
-        email: businessData.email,
+        email: applicantEmail,
         role: 'NEGOCIO',
       });
 

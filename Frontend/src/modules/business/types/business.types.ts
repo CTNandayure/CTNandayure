@@ -26,6 +26,7 @@ export interface BusinessRequestRecord {
   applicantFirstLastname: string
   applicantSecondLastname: string
   applicantPhone: string
+  applicantEmail: string
   requestStatus: RequestStatus
   rejectionReason: string | null
   createdAt: string
@@ -54,6 +55,16 @@ export interface BusinessRecord {
   userId: string | null
   createdAt: string
   updatedAt: string
+  request?: BusinessRequestRecord | null
+  user?: {
+    email: string
+    person?: {
+      name: string
+      first_lastname: string
+      second_lastname: string
+      phone: string
+    } | null
+  } | null
 }
 
 export interface PublicBusiness {

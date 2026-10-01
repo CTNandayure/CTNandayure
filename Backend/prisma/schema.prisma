@@ -150,13 +150,11 @@ enum District {
 model BusinessRequest {
   id              String          @id @default(cuid())
 
-  // Business info (Step 1)
   businessName    String          @db.VarChar(150)
   categories      BusinessCategory[]
   district        District
   description     String          @db.VarChar(2000)
 
-  // Contact & location (Step 2)
   phone           String          @db.VarChar(20)   // Business phone
   email           String          @db.VarChar(100)
   address         String          @db.VarChar(500)
@@ -166,20 +164,17 @@ model BusinessRequest {
   instagramUrl    String?         @db.VarChar(255)
   scheduleText    String          @db.VarChar(500)
 
-  // Multimedia (Step 3)
   coverImageUrl   String          @db.VarChar(500)
   galleryUrls     String[]
 
-  // Documents (Step 4)
   documentUrls    String[]
 
-  // Personal info / applicant (Step 5)
   applicantName           String  @db.VarChar(50)
   applicantFirstLastname  String  @db.VarChar(100)
   applicantSecondLastname String  @db.VarChar(100)
   applicantPhone          String  @db.VarChar(20)   // Personal phone
+  applicantEmail          String  @db.VarChar(100)
 
-  // Request status
   requestStatus   RequestStatus   @default(PENDING)
   rejectionReason String?         @db.VarChar(1000)
 

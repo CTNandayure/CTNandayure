@@ -36,7 +36,13 @@ export const StepReview: React.FC<StepReviewProps> = ({ formData, goToStep }) =>
 
   return (
     <div className="space-y-2">
-      <Section title="Información del Negocio" stepIndex={0}>
+      <Section title="Datos Personales del Solicitante" stepIndex={0}>
+        <Field label="Nombre completo" value={`${formData.applicantName || ''} ${formData.applicantFirstLastname || ''} ${formData.applicantSecondLastname || ''}`.trim()} />
+        <Field label="Teléfono personal" value={formData.applicantPhone} />
+        <Field label="Correo personal" value={formData.applicantEmail} />
+      </Section>
+
+      <Section title="Información del Negocio" stepIndex={1}>
         <Field label="Nombre del negocio" value={formData.businessName} />
         <Field label="Distrito" value={formData.district ? DISTRICT_LABELS[formData.district as DistrictKey] : ''} />
         <Field label="Categorías" value={
@@ -51,16 +57,16 @@ export const StepReview: React.FC<StepReviewProps> = ({ formData, goToStep }) =>
         <Field label="Descripción" value={<span className="whitespace-pre-line">{formData.description}</span>} />
       </Section>
 
-      <Section title="Contacto y Ubicación" stepIndex={1}>
+      <Section title="Contacto y Ubicación" stepIndex={2}>
         <Field label="Teléfono del negocio" value={formData.phone} />
-        <Field label="Correo electrónico" value={formData.email} />
+        <Field label="Correo del negocio" value={formData.email} />
         <Field label="Dirección exacta" value={<span className="whitespace-pre-line">{formData.address}</span>} />
-        <Field label="Facebook" value={formData.facebookUrl} />
-        <Field label="Instagram" value={formData.instagramUrl} />
+        {formData.facebookUrl && <Field label="Facebook" value={formData.facebookUrl} />}
+        {formData.instagramUrl && <Field label="Instagram" value={formData.instagramUrl} />}
         <Field label="Horario" value={<span className="whitespace-pre-line">{formData.scheduleText}</span>} />
       </Section>
 
-      <Section title="Multimedia" stepIndex={2}>
+      <Section title="Multimedia" stepIndex={3}>
         <Field label="Portada / Logo" value={
           formData.coverImageUrl && (
             <img src={formData.coverImageUrl} alt="Portada" className="w-32 h-32 object-cover rounded border" />
@@ -75,7 +81,7 @@ export const StepReview: React.FC<StepReviewProps> = ({ formData, goToStep }) =>
         } />
       </Section>
 
-      <Section title="Documentos Legales" stepIndex={3}>
+      <Section title="Documentos Legales" stepIndex={4}>
         <Field label="Documentos" value={
           <ul className="list-disc list-inside space-y-1">
             {(formData.documentUrls || []).map((url: string, idx: number) => (
@@ -83,11 +89,6 @@ export const StepReview: React.FC<StepReviewProps> = ({ formData, goToStep }) =>
             ))}
           </ul>
         } />
-      </Section>
-
-      <Section title="Datos Personales" stepIndex={4}>
-        <Field label="Nombre completo" value={`${formData.applicantName || ''} ${formData.applicantFirstLastname || ''} ${formData.applicantSecondLastname || ''}`} />
-        <Field label="Teléfono personal" value={formData.applicantPhone} />
       </Section>
     </div>
   )

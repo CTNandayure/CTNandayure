@@ -96,6 +96,23 @@ export const validateStep = (step: number, data: any): Record<string, string> =>
   const errors: Record<string, string> = {}
 
   if (step === 0) {
+    const nameErr = validateApplicantName(data.applicantName || '')
+    if (nameErr) errors.applicantName = nameErr
+
+    const lastName1Err = validateApplicantLastname(data.applicantFirstLastname || '')
+    if (lastName1Err) errors.applicantFirstLastname = lastName1Err
+
+    const lastName2Err = validateApplicantLastname(data.applicantSecondLastname || '')
+    if (lastName2Err) errors.applicantSecondLastname = lastName2Err
+
+    const appPhoneErr = validatePhone(data.applicantPhone || '')
+    if (appPhoneErr) errors.applicantPhone = appPhoneErr
+
+    const appEmailErr = validateEmail(data.applicantEmail || '')
+    if (appEmailErr) errors.applicantEmail = appEmailErr
+  }
+
+  if (step === 1) {
     const nameErr = validateBusinessName(data.businessName || '')
     if (nameErr) errors.businessName = nameErr
 
@@ -109,7 +126,7 @@ export const validateStep = (step: number, data: any): Record<string, string> =>
     if (descErr) errors.description = descErr
   }
 
-  if (step === 1) {
+  if (step === 2) {
     const phoneErr = validatePhone(data.phone || '')
     if (phoneErr) errors.phone = phoneErr
 
@@ -129,7 +146,7 @@ export const validateStep = (step: number, data: any): Record<string, string> =>
     if (schedErr) errors.scheduleText = schedErr
   }
 
-  if (step === 2) {
+  if (step === 3) {
     const coverErr = validateCoverImage(data.coverImageUrl || '')
     if (coverErr) errors.coverImageUrl = coverErr
 
@@ -137,23 +154,9 @@ export const validateStep = (step: number, data: any): Record<string, string> =>
     if (galleryErr) errors.galleryUrls = galleryErr
   }
 
-  if (step === 3) {
+  if (step === 4) {
     const docsErr = validateDocumentUrls(data.documentUrls || [])
     if (docsErr) errors.documentUrls = docsErr
-  }
-
-  if (step === 4) {
-    const nameErr = validateApplicantName(data.applicantName || '')
-    if (nameErr) errors.applicantName = nameErr
-
-    const lastName1Err = validateApplicantLastname(data.applicantFirstLastname || '')
-    if (lastName1Err) errors.applicantFirstLastname = lastName1Err
-
-    const lastName2Err = validateApplicantLastname(data.applicantSecondLastname || '')
-    if (lastName2Err) errors.applicantSecondLastname = lastName2Err
-
-    const appPhoneErr = validatePhone(data.applicantPhone || '')
-    if (appPhoneErr) errors.applicantPhone = appPhoneErr
   }
 
   return errors
