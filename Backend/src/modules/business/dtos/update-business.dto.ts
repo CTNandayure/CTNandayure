@@ -1,4 +1,5 @@
 import {
+  Matches,
   IsString,
   IsArray,
   ArrayMinSize,
@@ -40,11 +41,15 @@ export class UpdateBusinessDto {
   @IsOptional()
   @IsString()
   @MaxLength(20)
+  @Matches(/^\d{4}-\d{4}$/, { message: 'El teléfono debe tener el formato 8888-8888' })
   phone?: string;
 
   @IsOptional()
-  @IsEmail()
+  @IsString()
   @MaxLength(100)
+  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
+    message: 'El correo electrónico no es válido',
+  })
   email?: string;
 
   @IsOptional()

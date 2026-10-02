@@ -1,14 +1,16 @@
 import React from 'react'
 import { CATEGORY_LABELS, DISTRICT_LABELS } from '../../utils/constants'
 import type { BusinessCategory, DistrictKey } from '../../types/business.types'
+import { cn } from '../../../../lib/cn'
 
 interface StepReviewProps {
   formData: any
   isAdminMode?: boolean
+  isEditMode?: boolean
   goToStep: (step: number) => void
 }
 
-export const StepReview: React.FC<StepReviewProps> = ({ formData, goToStep }) => {
+export const StepReview: React.FC<StepReviewProps> = ({ formData, isEditMode = false, goToStep }) => {
   const Section = ({ title, stepIndex, children }: { title: string, stepIndex: number, children: React.ReactNode }) => (
     <div className="border rounded-lg overflow-hidden bg-white mb-6">
       <div className="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
@@ -16,7 +18,10 @@ export const StepReview: React.FC<StepReviewProps> = ({ formData, goToStep }) =>
         <button
           type="button"
           onClick={() => goToStep(stepIndex)}
-          className="text-brand-green hover:text-brand-green-strong text-sm font-medium"
+          className={cn(
+            isEditMode ? "text-brand-navy hover:text-brand-navy-soft" : "text-brand-green hover:text-brand-green-strong",
+            "text-sm font-semibold cursor-pointer transition-colors"
+          )}
         >
           Editar
         </button>
@@ -69,13 +74,25 @@ export const StepReview: React.FC<StepReviewProps> = ({ formData, goToStep }) =>
       <Section title="Multimedia" stepIndex={3}>
         <Field label="Portada / Logo" value={
           formData.coverImageUrl && (
-            <img src={formData.coverImageUrl} alt="Portada" className="w-32 h-32 object-cover rounded border" />
+            <div className="rounded-xl overflow-hidden border border-brand-navy/15 shadow-sm p-1 inline-block bg-gray-50">
+              <img
+                src={formData.coverImageUrl}
+                alt="Portada"
+                className="max-h-56 max-w-full w-auto h-auto object-contain rounded-lg"
+              />
+            </div>
           )
         } />
         <Field label="Galería" value={
-          <div className="grid grid-cols-3 gap-2">
+          <div className="flex flex-wrap gap-3">
             {(formData.galleryUrls || []).map((url: string, idx: number) => (
-              <img key={idx} src={url} alt={`Galería ${idx}`} className="w-24 h-24 object-cover rounded border" />
+              <div key={idx} className="rounded-xl overflow-hidden border border-brand-navy/15 shadow-sm p-1 bg-gray-50 flex items-center justify-center">
+                <img
+                  src={url}
+                  alt={'Galería ' + (idx + 1)}
+                  className="h-32 w-32 sm:h-36 sm:w-36 object-contain rounded-lg"
+                />
+              </div>
             ))}
           </div>
         } />
@@ -85,7 +102,9 @@ export const StepReview: React.FC<StepReviewProps> = ({ formData, goToStep }) =>
         <Field label="Documentos" value={
           <ul className="list-disc list-inside space-y-1">
             {(formData.documentUrls || []).map((url: string, idx: number) => (
-              <li key={idx} className="text-brand-green truncate">{url.split('/').pop()}</li>
+              <li key={idx} className={cn(isEditMode ? "text-brand-navy font-medium" : "text-brand-green", "truncate")}>
+                {url.split('/').pop()}
+              </li>
             ))}
           </ul>
         } />

@@ -39,7 +39,7 @@ export function Navbar() {
 
         <div className="hidden items-center gap-3 lg:flex">
           {isAuthenticated ? (
-            <UserMenu />
+            <UserMenu variant="dark" />
           ) : (
             <>
               <Button href="/afiliacion" variant="accent" size="sm">
@@ -76,7 +76,7 @@ export function Navbar() {
           ))}
           {!isAuthenticated && <Button href="/afiliacion" variant="accent" className="mt-4 justify-center">Afíliese</Button>}
                     {!isAuthenticated && <Button href="/users/login" variant="primary" className="mt-2 justify-center">Iniciar sesión</Button>}
-          {isAuthenticated && <div className="mt-4"><UserMenu /></div>}
+          {isAuthenticated && <div className="mt-4"><UserMenu variant="dark" /></div>}
         </div>
       )}
     </header>

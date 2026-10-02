@@ -1,5 +1,5 @@
 import React from 'react'
-import { FormField, Input, Textarea } from '../../../../components/ui'
+import { FormField, Input, PhoneInput, Textarea } from '../../../../components/ui'
 import { SCHEDULE_PLACEHOLDER } from '../../utils/constants'
 
 interface StepContactLocationProps {
@@ -13,11 +13,11 @@ export const StepContactLocation: React.FC<StepContactLocationProps> = ({ formDa
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Teléfono del negocio" error={errors.phone} htmlFor="phone">
-          <Input
+          <PhoneInput
             id="phone"
             value={formData.phone || ''}
-            onChange={(e) => updateField('phone', e.target.value)}
-            placeholder="Ej: 8888-8888"
+            onValueChange={(val: string) => updateField('phone', val)}
+            placeholder="8888-8888"
           />
         </FormField>
 

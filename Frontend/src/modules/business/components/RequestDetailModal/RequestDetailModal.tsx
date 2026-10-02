@@ -89,14 +89,31 @@ export function RequestDetailModal({ open, onClose, request }: RequestDetailModa
           <dd className="mt-1 text-sm text-brand-ink/80 whitespace-pre-line">{request.scheduleText}</dd>
         </div>
 
-        {/* Images */}
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-ink/50">Imágenes</p>
-          <div className="grid grid-cols-4 gap-2">
-            <img src={request.coverImageUrl} alt="Portada" className="h-24 w-full rounded-lg border-2 border-brand-green object-cover" title="Portada" />
-            {request.galleryUrls.map((url, i) => (
-              <img key={i} src={url} alt={`Galería ${i + 1}`} className="h-24 w-full rounded-lg border border-brand-navy/10 object-cover" />
-            ))}
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-ink/55">Imágenes del negocio</p>
+          <div className="space-y-4">
+            {request.coverImageUrl && (
+              <div>
+                <p className="mb-1.5 text-xs text-brand-ink/60 font-medium">Foto de portada / Logo:</p>
+                <div className="w-full max-w-md h-48 rounded-xl overflow-hidden border-2 border-brand-teal shadow-sm">
+                  <img src={request.coverImageUrl} alt="Portada" className="h-full w-full object-cover" />
+                </div>
+              </div>
+            )}
+            {request.galleryUrls && request.galleryUrls.length > 0 && (
+              <div>
+                <p className="mb-1.5 text-xs text-brand-ink/60 font-medium">
+                  {'Galería (' + request.galleryUrls.length + ' fotos):'}
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {request.galleryUrls.map((url, i) => (
+                    <div key={i} className="aspect-[4/3] rounded-xl overflow-hidden border border-brand-navy/10 shadow-sm">
+                      <img src={url} alt={'Galería ' + (i + 1)} className="h-full w-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

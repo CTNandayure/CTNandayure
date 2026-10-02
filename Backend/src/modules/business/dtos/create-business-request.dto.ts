@@ -1,4 +1,5 @@
 import {
+  Matches,
   IsString,
   IsNotEmpty,
   IsArray,
@@ -43,11 +44,15 @@ export class CreateBusinessRequestDto {
   @IsString()
   @IsNotEmpty({ message: 'El teléfono es requerido' })
   @MaxLength(20, { message: 'El teléfono no puede exceder 20 caracteres' })
+  @Matches(/^\d{4}-\d{4}$/, { message: 'El teléfono debe tener el formato 8888-8888' })
   phone!: string;
 
-  @IsEmail({}, { message: 'El correo electrónico del negocio no es válido' })
+  @IsString()
   @IsNotEmpty({ message: 'El correo electrónico del negocio es requerido' })
   @MaxLength(100, { message: 'El correo electrónico no puede exceder 100 caracteres' })
+  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
+    message: 'El correo electrónico del negocio no es válido',
+  })
   email!: string;
 
   @IsString()
@@ -119,10 +124,14 @@ export class CreateBusinessRequestDto {
   @IsString()
   @IsNotEmpty({ message: 'El teléfono del solicitante es requerido' })
   @MaxLength(20, { message: 'El teléfono no puede exceder 20 caracteres' })
+  @Matches(/^\d{4}-\d{4}$/, { message: 'El teléfono del solicitante debe tener el formato 8888-8888' })
   applicantPhone!: string;
 
-  @IsEmail({}, { message: 'El correo electrónico del solicitante no es válido' })
+  @IsString()
   @IsNotEmpty({ message: 'El correo electrónico del solicitante es requerido' })
   @MaxLength(100, { message: 'El correo electrónico no puede exceder 100 caracteres' })
+  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
+    message: 'El correo electrónico del solicitante no es válido',
+  })
   applicantEmail!: string;
 }

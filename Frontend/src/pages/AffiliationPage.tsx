@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { Button, Container, FileUpload, FormActions, FormField, Input, Select, Textarea, useToast } from '../components/ui'
 import { useDistricts } from '../content/districts'
 import logo from '../assets/logo.png'
-
 interface AffiliationFormValues {
   fullName: string
   businessName: string
@@ -12,7 +11,6 @@ interface AffiliationFormValues {
   district: string
   message: string
 }
-
 const BENEFITS = [
   'Aparecer en el directorio de negocios del sitio',
   'Promoción conjunta en redes y campañas de la Cámara',
@@ -20,7 +18,6 @@ const BENEFITS = [
   'Participación en ferias y actividades del cantón',
   'Red de contacto con otros emprendedores turísticos',
 ]
-
 export default function AffiliationPage() {
   const { data: districts } = useDistricts()
   const { showToast } = useToast()
@@ -31,8 +28,6 @@ export default function AffiliationPage() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<AffiliationFormValues>()
-
-  // No hay endpoint de afiliación todavía — se simula el envío.
   async function onSubmit() {
     await new Promise((resolve) => setTimeout(resolve, 500))
     showToast({
@@ -43,7 +38,6 @@ export default function AffiliationPage() {
     reset()
     setDocuments([])
   }
-
   return (
     <div className="min-h-screen bg-brand-paper">
       <header className="border-b border-brand-navy/10 bg-white">
@@ -56,7 +50,6 @@ export default function AffiliationPage() {
           </Button>
         </Container>
       </header>
-
       <Container className="grid gap-12 py-14 md:grid-cols-2 md:py-20">
         <div className="flex flex-col gap-5">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-teal">Afíliese a la cámara</span>
@@ -71,18 +64,14 @@ export default function AffiliationPage() {
             ))}
           </ul>
         </div>
-
         <form onSubmit={handleSubmit(onSubmit)} className="flex h-fit flex-col gap-4 rounded-2xl bg-white p-8 shadow-sm">
           <h2 className="text-lg font-bold text-brand-navy">Formulario de afiliación</h2>
-
           <FormField label="Nombre completo" htmlFor="fullName" error={errors.fullName?.message}>
             <Input id="fullName" {...register('fullName', { required: 'Ingresá tu nombre completo' })} />
           </FormField>
-
           <FormField label="Nombre del negocio" htmlFor="businessName" error={errors.businessName?.message}>
             <Input id="businessName" {...register('businessName', { required: 'Ingresá el nombre del negocio' })} />
           </FormField>
-
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="Teléfono" htmlFor="phone" error={errors.phone?.message}>
               <Input id="phone" type="tel" {...register('phone', { required: 'Ingresá un teléfono de contacto' })} />
@@ -98,7 +87,6 @@ export default function AffiliationPage() {
               />
             </FormField>
           </div>
-
           <FormField label="Distrito del negocio" htmlFor="district" error={errors.district?.message}>
             <Select id="district" defaultValue="" {...register('district', { required: 'Seleccioná un distrito' })}>
               <option value="" disabled>
@@ -111,18 +99,15 @@ export default function AffiliationPage() {
               ))}
             </Select>
           </FormField>
-
           <FormField label="Cuéntenos sobre su negocio" htmlFor="message">
             <Textarea id="message" {...register('message')} />
           </FormField>
-
           <FileUpload
             label="Documentos o fotos del negocio"
             hint="Cédula jurídica, permiso de funcionamiento, fotos del local, etc. — para verificar que el negocio está en regla."
             accept="image/*,.pdf"
             onChange={setDocuments}
           />
-
           <FormActions>
             <Button type="submit" variant="primary" disabled={isSubmitting}>
               {isSubmitting ? 'Enviando…' : 'Enviar solicitud'}

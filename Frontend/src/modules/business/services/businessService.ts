@@ -80,6 +80,17 @@ export const businessService = {
     return request<BusinessRecord>(`/businesses/${id}`)
   },
 
+    getMyBusiness() {
+    return request<BusinessRecord>('/businesses/my-business')
+  },
+
+  updateMyBusiness(data: Partial<BusinessRecord>) {
+    return request<BusinessRecord>('/businesses/my-business', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  },
+
   updateBusiness(id: string, data: Partial<BusinessRecord>) {
     return request<BusinessRecord>(`/businesses/${id}`, {
       method: 'PATCH',

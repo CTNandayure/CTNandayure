@@ -130,7 +130,24 @@ export class BusinessController {
     };
   }
 
-  @Get(':id')
+    @Get('my-business')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('NEGOCIO', 'ADMIN')
+  async getMyBusiness(@Req() req: any) {
+    return this.businessService.getMyBusiness(req.user.id_person);
+  }
+
+  @Patch('my-business')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('NEGOCIO', 'ADMIN')
+  async updateMyBusiness(
+    @Req() req: any,
+    @Body() dto: UpdateBusinessDto,
+  ) {
+    return this.businessService.updateMyBusiness(req.user.id_person, dto);
+  }
+
+@Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   async getBusinessById(@Param('id') id: string) {

@@ -16,6 +16,12 @@ const InstagramIcon = () => (
   </svg>
 )
 
+const ExternalArrowIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 shrink-0 opacity-70 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+  </svg>
+)
+
 interface LightboxProps {
   images: string[]
   initialIndex: number
@@ -300,10 +306,11 @@ export function BusinessDetailModal({ open, onClose, request, business }: Busine
                         target="_blank"
                         rel="noreferrer"
                         title="Ver en Facebook"
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-brand-navy/10 px-3 py-2 text-[#1877F2] hover:bg-blue-50 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-navy/10 px-3 py-2 text-[#1877F2] hover:bg-blue-50 transition-colors cursor-pointer"
                       >
                         <FacebookIcon />
                         <span className="text-sm font-medium">Facebook</span>
+                        <ExternalArrowIcon />
                       </a>
                     )}
                     {data.instagramUrl && (
@@ -312,10 +319,11 @@ export function BusinessDetailModal({ open, onClose, request, business }: Busine
                         target="_blank"
                         rel="noreferrer"
                         title="Ver en Instagram"
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-brand-navy/10 px-3 py-2 text-[#E1306C] hover:bg-pink-50 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-navy/10 px-3 py-2 text-[#E1306C] hover:bg-pink-50 transition-colors cursor-pointer"
                       >
                         <InstagramIcon />
                         <span className="text-sm font-medium">Instagram</span>
+                        <ExternalArrowIcon />
                       </a>
                     )}
                   </div>
@@ -333,10 +341,14 @@ export function BusinessDetailModal({ open, onClose, request, business }: Busine
                 <button
                   type="button"
                   onClick={() => openLightbox(0)}
-                  className="cursor-pointer rounded-lg overflow-hidden border-2 border-brand-green hover:opacity-90 transition-opacity focus:outline-none"
+                  className="cursor-pointer rounded-xl overflow-hidden border-2 border-brand-green hover:opacity-90 transition-opacity focus:outline-none block shadow-sm bg-gray-50 p-1"
                   title="Clic para ver en grande"
                 >
-                  <img src={coverImageUrl} alt="Portada" className="h-40 w-auto object-cover" />
+                  <img
+                    src={coverImageUrl}
+                    alt="Portada"
+                    className="max-h-64 max-w-full w-auto h-auto object-contain rounded-lg"
+                  />
                 </button>
               </div>
             )}
@@ -345,16 +357,20 @@ export function BusinessDetailModal({ open, onClose, request, business }: Busine
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-ink/50">
                   Galería ({galleryUrls.length} {galleryUrls.length === 1 ? 'foto' : 'fotos'})
                 </p>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-4">
                   {galleryUrls.map((url, i) => (
                     <button
                       key={i}
                       type="button"
                       onClick={() => openLightbox(i + 1)}
-                      className="cursor-pointer rounded-lg overflow-hidden border border-brand-navy/10 hover:opacity-90 transition-opacity focus:outline-none"
+                      className="cursor-pointer rounded-xl overflow-hidden border border-brand-navy/10 hover:opacity-90 transition-opacity focus:outline-none shadow-sm bg-gray-50 p-1 flex items-center justify-center"
                       title="Clic para ver en grande"
                     >
-                      <img src={url} alt={`Galería ${i + 1}`} className="h-24 w-24 object-cover" />
+                      <img
+                        src={url}
+                        alt={'Galería ' + (i + 1)}
+                        className="h-36 w-36 sm:h-40 sm:w-40 object-contain rounded-lg"
+                      />
                     </button>
                   ))}
                 </div>
@@ -377,12 +393,15 @@ export function BusinessDetailModal({ open, onClose, request, business }: Busine
                       href={url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-lg border border-brand-navy/10 px-3 py-2 text-sm font-medium text-brand-teal hover:bg-brand-paper transition-colors"
+                      className="inline-flex items-center justify-between gap-3 rounded-lg border border-brand-navy/10 px-3 py-2 text-sm font-medium text-brand-teal hover:bg-brand-paper transition-colors"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      Documento {i + 1}
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Documento {i + 1}</span>
+                      </div>
+                      <ExternalArrowIcon />
                     </a>
                   </li>
                 ))}

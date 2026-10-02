@@ -162,7 +162,26 @@ export class BusinessService {
     });
   }
 
-  async getBusinessById(id: string) {
+    async getMyBusiness(userId: string) {
+    const business = await (this.prisma as any).business.findUnique({
+      where: { userId },
+      include: { request: true, user: { include: { person: true } } },
+    });
+    if (!business) {
+      throw new NotFoundException('No se encontró ningún negocio asociado a esta cuenta');
+    }
+    return business;
+  }
+
+  async updateMyBusiness(userId: string, dto: UpdateBusinessDto) {
+    const business = await this.getMyBusiness(userId);
+    return (this.prisma as any).business.update({
+      where: { id: business.id },
+      data: dto,
+    });
+  }
+
+async getBusinessById(id: string) {
     const business = await (this.prisma as any).business.findUnique({
       where: { id },
       include: { request: true, user: { include: { person: true } } },

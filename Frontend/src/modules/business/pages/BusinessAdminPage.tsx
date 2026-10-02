@@ -34,6 +34,7 @@ export default function BusinessAdminPage() {
   const [statusFilter, setStatusFilter] = useState('all')
 
   const [wizardOpen, setWizardOpen] = useState(false)
+  const [editingBusiness, setEditingBusiness] = useState<BusinessRecord | null>(null)
   const [detailRequest, setDetailRequest] = useState<BusinessRequestRecord | null>(null)
   const [detailBusiness, setDetailBusiness] = useState<BusinessRecord | null>(null)
   const [rejectingRequest, setRejectingRequest] = useState<BusinessRequestRecord | null>(null)
@@ -42,6 +43,12 @@ export default function BusinessAdminPage() {
 
   const [requestSorting, setRequestSorting] = useState<SortingState>([])
   const [businessSorting, setBusinessSorting] = useState<SortingState>([])
+
+  const [reqPageSize, setReqPageSize] = useState(10)
+  const [reqPageIndex] = useState(0)
+
+  const [bizPageSize, setBizPageSize] = useState(10)
+  const [bizPageIndex] = useState(0)
 
   const loadRequests = async () => {
     try {
@@ -75,7 +82,8 @@ export default function BusinessAdminPage() {
   const filteredRequests = useMemo(() => {
     const q = search.trim().toLowerCase()
     return requests.filter((r) => {
-      return !q || r.businessName.toLowerCase().includes(q) || `${r.applicantName} ${r.applicantFirstLastname} ${r.applicantSecondLastname}`.toLowerCase().includes(q)
+      const applicantFull = (r.applicantName + ' ' + r.applicantFirstLastname + ' ' + r.applicantSecondLastname).toLowerCase()
+      return !q || r.businessName.toLowerCase().includes(q) || applicantFull.includes(q)
     })
   }, [requests, search])
 
@@ -145,12 +153,12 @@ export default function BusinessAdminPage() {
     {
       id: 'applicant',
       header: 'Solicitante',
-      cell: ({ row }: any) => `${row.original.applicantName} ${row.original.applicantFirstLastname} ${row.original.applicantSecondLastname}`,
+      cell: ({ row }: any) => row.original.applicantName + ' ' + row.original.applicantFirstLastname + ' ' + row.original.applicantSecondLastname,
     },
     {
       accessorKey: 'district',
       header: 'Distrito',
-      cell: ({ row }: any) => DISTRICT_LABELS[row.original.district as keyof typeof DISTRICT_LABELS],
+      cell: ({ row }: any) => DISTRICT_LABELS[row.original.district as keyof typeof DISTRICT_LABELS] ?? row.original.district,
     },
     {
       accessorKey: 'categories',
@@ -158,20 +166,20 @@ export default function BusinessAdminPage() {
       enableSorting: false,
       cell: ({ row }: any) => (
         <div className="flex flex-wrap gap-1">
-          {row.original.categories.map((c: any) => <Badge key={c} color="teal">{CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS]}</Badge>)}
+          {row.original.categories.map((c: any) => <Badge key={c} color="teal">{CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS] ?? c}</Badge>)}
         </div>
       ),
     },
     {
       accessorKey: 'createdAt',
-      header: 'Fecha de solicitud',
+      header: 'Fecha solicitud',
       cell: ({ row }: any) => new Date(row.original.createdAt).toLocaleDateString('es-CR'),
     },
     {
       id: 'actions',
       header: 'Acciones',
       cell: ({ row }: any) => (
-        <div className="flex gap-1">
+        <div className="flex justify-end gap-1.5">
           <TableActionButton variant="view" onClick={() => setDetailRequest(row.original)}>Ver</TableActionButton>
           <TableActionButton variant="activate" onClick={() => setConfirmApprove(row.original)}>Aceptar</TableActionButton>
           <TableActionButton variant="deactivate" onClick={() => setRejectingRequest(row.original)}>Rechazar</TableActionButton>
@@ -187,7 +195,7 @@ export default function BusinessAdminPage() {
     paginatedRowModel: createPaginatedRowModel(),
   })
 
-  const [reqPagination, setReqPagination] = useState({ pageIndex: 0, pageSize: 10 })
+  const [reqPagination, setReqPagination] = useState({ pageIndex: reqPageIndex, pageSize: reqPageSize })
 
   const reqTable = useTable({
     data: filteredRequests,
@@ -209,7 +217,7 @@ export default function BusinessAdminPage() {
       cell: ({ row }: any) => (
         <div className="flex items-center gap-3">
           {row.original.coverImageUrl ? (
-            <img src={row.original.coverImageUrl} alt="" className="h-10 w-10 flex-none rounded-lg object-cover" />
+            <img src={row.original.coverImageUrl} alt="" className="h-10 w-10 flex-none rounded-lg object-cover border" />
           ) : (
             <div className="h-10 w-10 flex-none rounded-lg bg-brand-sand" />
           )}
@@ -220,7 +228,7 @@ export default function BusinessAdminPage() {
     {
       accessorKey: 'district',
       header: 'Distrito',
-      cell: ({ row }: any) => DISTRICT_LABELS[row.original.district as keyof typeof DISTRICT_LABELS],
+      cell: ({ row }: any) => DISTRICT_LABELS[row.original.district as keyof typeof DISTRICT_LABELS] ?? row.original.district,
     },
     {
       accessorKey: 'categories',
@@ -228,7 +236,7 @@ export default function BusinessAdminPage() {
       enableSorting: false,
       cell: ({ row }: any) => (
         <div className="flex flex-wrap gap-1">
-          {row.original.categories.map((c: any) => <Badge key={c} color="teal">{CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS]}</Badge>)}
+          {row.original.categories.map((c: any) => <Badge key={c} color="teal">{CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS] ?? c}</Badge>)}
         </div>
       ),
     },
@@ -246,8 +254,9 @@ export default function BusinessAdminPage() {
       id: 'actions',
       header: 'Acciones',
       cell: ({ row }: any) => (
-        <div className="flex gap-1">
+        <div className="flex justify-end gap-1.5">
           <TableActionButton variant="view" onClick={() => setDetailBusiness(row.original)}>Ver</TableActionButton>
+          <TableActionButton variant="edit" onClick={() => setEditingBusiness(row.original)}>Editar</TableActionButton>
           <TableActionButton
             variant={row.original.businessStatus === 'ACTIVE' ? 'deactivate' : 'activate'}
             onClick={() => setConfirmStatusBiz(row.original)}
@@ -266,7 +275,7 @@ export default function BusinessAdminPage() {
     paginatedRowModel: createPaginatedRowModel(),
   })
 
-  const [bizPagination, setBizPagination] = useState({ pageIndex: 0, pageSize: 10 })
+  const [bizPagination, setBizPagination] = useState({ pageIndex: bizPageIndex, pageSize: bizPageSize })
 
   const bizTable = useTable({
     data: filteredBusinesses,
@@ -281,6 +290,30 @@ export default function BusinessAdminPage() {
   })
 
   const currentTable = activeTab === 'requests' ? reqTable : bizTable
+  const currentPageSize = activeTab === 'requests' ? reqPageSize : bizPageSize
+  const handlePageSizeChange = (nextSize: number) => {
+    if (activeTab === 'requests') {
+      setReqPageSize(nextSize)
+      setReqPagination({ pageIndex: 0, pageSize: nextSize })
+    } else {
+      setBizPageSize(nextSize)
+      setBizPagination({ pageIndex: 0, pageSize: nextSize })
+    }
+  }
+
+  const pageCount = currentTable.getPageCount()
+
+  const goToPreviousPage = () => {
+    if (currentTable.getCanPreviousPage()) {
+      currentTable.previousPage()
+    }
+  }
+
+  const goToNextPage = () => {
+    if (currentTable.getCanNextPage()) {
+      currentTable.nextPage()
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -347,63 +380,78 @@ export default function BusinessAdminPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12 text-brand-ink/50">Cargando...</div>
+        <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 text-brand-ink/60">Cargando registros...</div>
+      ) : currentTable.getRowModel().rows.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-brand-navy/15 bg-white p-8 text-center text-brand-ink/60">
+          {activeTab === 'requests' ? 'No se encontraron solicitudes pendientes' : 'No se encontraron negocios afiliados'}
+        </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-brand-navy/10">
-          <table className="w-full text-left text-sm">
-            <thead>
-              {currentTable.getHeaderGroups().map((headerGroup: any) => (
-                <tr key={headerGroup.id} className="border-b border-brand-navy/10 bg-brand-sand/50">
-                  {headerGroup.headers.map((header: any) => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-brand-ink/60"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <button
-                          type="button"
-                          className="flex items-center gap-1 font-semibold uppercase hover:text-brand-navy text-left"
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          <span>
-                            {header.column.getIsSorted() === 'asc' ? ' ↑' : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
-                          </span>
-                        </button>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {currentTable.getRowModel().rows.map((row: any) => (
-                <tr key={row.id} className="border-b border-brand-navy/5 transition-colors hover:bg-brand-paper/60">
-                  {row.getAllCells().map((cell: any) => (
-                    <td key={cell.id} className="px-4 py-3 text-brand-ink/80">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="overflow-hidden rounded-2xl border border-brand-navy/10 bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="bg-brand-sand text-brand-navy">
+                {currentTable.getHeaderGroups().map((headerGroup: any) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header: any) => (
+                      <th key={header.id} className="px-4 py-3 font-semibold">
+                        {header.isPlaceholder ? null : (
+                          <button
+                            type="button"
+                            className="flex items-center gap-2 text-left"
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            <span aria-hidden="true">
+                              {header.column.getIsSorted() === 'asc' ? '↑' : header.column.getIsSorted() === 'desc' ? '↓' : '↕'}
+                            </span>
+                          </button>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {currentTable.getRowModel().rows.map((row: any) => (
+                  <tr key={row.id} className="border-t border-brand-navy/10 align-top hover:bg-brand-paper/50 transition-colors">
+                    {row.getAllCells().map((cell: any) => (
+                      <td key={cell.id} className="px-4 py-3">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          {currentTable.getRowModel().rows.length === 0 && (
-            <div className="py-12 text-center text-brand-ink/50">No hay registros</div>
-          )}
-
-          {currentTable.getPageCount() > 1 && (
-            <div className="flex items-center justify-between border-t border-brand-navy/10 px-4 py-3">
-              <span className="text-xs text-brand-ink/50">
-                Página {currentTable.state.pagination.pageIndex + 1} de {currentTable.getPageCount()}
-              </span>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => currentTable.previousPage()} disabled={!currentTable.getCanPreviousPage()}>Anterior</Button>
-                <Button variant="outline" size="sm" onClick={() => currentTable.nextPage()} disabled={!currentTable.getCanNextPage()}>Siguiente</Button>
-              </div>
+          <div className="flex flex-col gap-3 border-t border-brand-navy/10 bg-brand-paper px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-sm text-brand-ink/70">
+              <span>Filas por página</span>
+              <select
+                value={currentPageSize}
+                onChange={(event) => handlePageSizeChange(Number(event.target.value))}
+                className="rounded border border-brand-navy/15 bg-white px-2 py-1 text-sm"
+                aria-label="Seleccionar filas por página"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
             </div>
-          )}
+
+            <div className="flex items-center gap-2 text-sm text-brand-ink/70">
+              <span>
+                Página {currentTable.state.pagination.pageIndex + 1} de {pageCount || 1}
+              </span>
+              <Button variant="outline" onClick={goToPreviousPage} className="px-3 py-1.5 text-xs" disabled={!currentTable.getCanPreviousPage()}>
+                Anterior
+              </Button>
+              <Button variant="outline" onClick={goToNextPage} className="px-3 py-1.5 text-xs" disabled={!currentTable.getCanNextPage()}>
+                Siguiente
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -416,12 +464,36 @@ export default function BusinessAdminPage() {
       >
         <AffiliationWizard
           isAdminMode
+          onCancel={() => setWizardOpen(false)}
           onComplete={() => {
             setWizardOpen(false)
             loadBusinesses()
             showToast({ variant: 'success', title: 'Negocio registrado', description: 'Se creó el negocio y la cuenta del usuario exitosamente.' })
           }}
         />
+      </Modal>
+
+      <Modal
+        size="xl"
+        open={Boolean(editingBusiness)}
+        onOpenChange={(open) => !open && setEditingBusiness(null)}
+        title={'Editar negocio — ' + (editingBusiness?.businessName ?? '')}
+        description="Actualice la información del negocio afiliado"
+      >
+        {editingBusiness && (
+          <AffiliationWizard
+            isAdminMode
+            isEditMode
+            initialData={editingBusiness}
+            businessId={editingBusiness.id}
+            onCancel={() => setEditingBusiness(null)}
+            onComplete={() => {
+              setEditingBusiness(null)
+              loadBusinesses()
+              showToast({ variant: 'success', title: 'Negocio actualizado', description: 'Los cambios fueron guardados exitosamente.' })
+            }}
+          />
+        )}
       </Modal>
 
       {detailRequest && (
@@ -462,7 +534,7 @@ export default function BusinessAdminPage() {
         }
       >
         <p className="text-sm text-brand-ink/70">
-          {confirmApprove ? `¿Desea aprobar la solicitud de "${confirmApprove.businessName}"?` : ''}
+          {confirmApprove ? '¿Desea aprobar la solicitud de "' + confirmApprove.businessName + '"?' : ''}
         </p>
       </Modal>
 
@@ -481,7 +553,7 @@ export default function BusinessAdminPage() {
         }
       >
         <p className="text-sm text-brand-ink/70">
-          {confirmStatusBiz ? `¿Desea continuar con "${confirmStatusBiz.businessName}"?` : 'Confirmación requerida.'}
+          {confirmStatusBiz ? '¿Desea continuar con "' + confirmStatusBiz.businessName + '"?' : 'Confirmación requerida.'}
         </p>
       </Modal>
     </div>

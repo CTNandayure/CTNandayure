@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AffiliationWizard } from '../components/AffiliationWizard/AffiliationWizard'
 import { Button } from '../../../components/ui'
 
 export default function AffiliationPage() {
   const [isComplete, setIsComplete] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-brand-paper py-12">
@@ -40,7 +41,7 @@ export default function AffiliationPage() {
             </Link>
           </div>
         ) : (
-          <AffiliationWizard onComplete={() => setIsComplete(true)} />
+          <AffiliationWizard onCancel={() => navigate('/')} onComplete={() => setIsComplete(true)} />
         )}
       </div>
     </div>

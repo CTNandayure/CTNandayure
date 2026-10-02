@@ -1,20 +1,29 @@
 import React from 'react'
-import { FormField, Input } from '../../../../components/ui'
+import { FormField, Input, PhoneInput } from '../../../../components/ui'
 
 interface StepPersonalInfoProps {
   formData: any
   errors: Record<string, string>
   updateField: (field: string, value: any) => void
+  isEditMode?: boolean
 }
 
-export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ formData, errors, updateField }) => {
+export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({
+  formData,
+  errors,
+  updateField,
+  isEditMode = false,
+}) => {
+  const isEmailLocked = isEditMode || Boolean(formData?.id) || Boolean(formData?.userId) || Boolean(formData?.request)
+
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-brand-teal/30 bg-brand-teal/5 p-4">
         <p className="text-sm text-brand-navy/80">
           <span className="font-semibold text-brand-teal">Paso 1 de 6 — Datos personales.</span>{' '}
-          Ingrese su información personal como solicitante. El correo electrónico de este paso será
-          utilizado para crear su cuenta y enviarle la respuesta de su solicitud.
+          {isEmailLocked
+            ? 'Información de la persona titular de la cuenta del negocio.'
+            : 'Ingrese su información personal como solicitante. El correo electrónico de este paso será utilizado para crear su cuenta y enviarle la respuesta de su solicitud.'}
         </p>
       </div>
 
@@ -49,11 +58,11 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ formData, er
         </FormField>
 
         <FormField label="Teléfono personal" error={errors.applicantPhone} htmlFor="applicantPhone">
-          <Input
+          <PhoneInput
             id="applicantPhone"
             value={formData.applicantPhone || ''}
-            onChange={(e) => updateField('applicantPhone', e.target.value)}
-            placeholder="Ej: 8888-8888"
+            onValueChange={(val: string) => updateField('applicantPhone', val)}
+            placeholder="8888-8888"
           />
         </FormField>
       </div>
@@ -67,9 +76,17 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({ formData, er
           id="applicantEmail"
           type="email"
           value={formData.applicantEmail || ''}
-          onChange={(e) => updateField('applicantEmail', e.target.value)}
+          disabled={isEmailLocked}
+          readOnly={isEmailLocked}
+          onChange={isEmailLocked ? undefined : (e) => updateField('applicantEmail', e.target.value)}
           placeholder="Ej: juan@correo.com"
+          className={isEmailLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed select-none' : ''}
         />
+        {isEmailLocked && (
+          <p className="mt-1.5 text-xs text-brand-ink/60">
+            El correo electrónico no es modificable.
+          </p>
+        )}
       </FormField>
     </div>
   )

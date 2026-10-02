@@ -1,9 +1,7 @@
+import { validateEmail as sharedValidateEmail } from '../../../utils/validation'
 import { PASSWORD_MIN_LENGTH } from './constants'
 
-export function validateEmail(value: string) {
-  if (!value.trim()) return 'El correo es obligatorio'
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? '' : 'Ingresa un correo válido'
-}
+export const validateEmail = sharedValidateEmail
 
 export function validatePassword(value: string) {
   if (!value) return 'La contraseña es obligatoria'

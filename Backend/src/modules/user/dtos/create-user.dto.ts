@@ -51,8 +51,12 @@ export class CreateUserDto {
   )
   phone!: string;
 
-  @IsEmail()
-  @MaxLength(100)
+  @IsString()
+  @IsNotEmpty({ message: 'El correo electrónico es requerido' })
+  @MaxLength(100, { message: 'El correo no puede exceder 100 caracteres' })
+  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
+    message: 'El correo electrónico no es válido',
+  })
   email!: string;
 
   @IsOptional()

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { WizardProgress } from './WizardProgress'
 import { StepPersonalInfo } from './StepPersonalInfo'
 import { StepBusinessInfo } from './StepBusinessInfo'
@@ -11,11 +12,32 @@ import { Button, Alert, Modal } from '../../../../components/ui'
 
 interface AffiliationWizardProps {
   isAdminMode?: boolean
+  isEditMode?: boolean
+  initialData?: any
+  businessId?: string
+  isUserSelfManagement?: boolean
   onComplete?: () => void
+  onCancel?: () => void
 }
 
-export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({ isAdminMode = false, onComplete }) => {
-  const wizard = useAffiliationWizard(isAdminMode)
+export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({
+  isAdminMode = false,
+  isEditMode = false,
+  initialData = null,
+  businessId,
+  isUserSelfManagement = false,
+  onComplete,
+  onCancel,
+}) => {
+  const wizard = useAffiliationWizard({
+    isAdminMode,
+    isEditMode,
+    initialData,
+    businessId,
+    isUserSelfManagement,
+  })
+  const navigate = useNavigate()
+  const handleCancel = onCancel ?? (() => navigate('/'))
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   if (wizard.isComplete) {
@@ -28,7 +50,7 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({ isAdminMod
   const renderStep = () => {
     switch (wizard.currentStep) {
       case 0:
-        return <StepPersonalInfo formData={wizard.formData} errors={wizard.errors} updateField={wizard.updateField} />
+        return <StepPersonalInfo formData={wizard.formData} errors={wizard.errors} updateField={wizard.updateField} isEditMode={isEditMode} />
       case 1:
         return <StepBusinessInfo formData={wizard.formData} errors={wizard.errors} updateField={wizard.updateField} />
       case 2:
@@ -38,7 +60,7 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({ isAdminMod
       case 4:
         return <StepDocuments formData={wizard.formData} errors={wizard.errors} updateField={wizard.updateField} />
       case 5:
-        return <StepReview formData={wizard.formData} isAdminMode={isAdminMode} goToStep={wizard.goToStep} />
+        return <StepReview formData={wizard.formData} isAdminMode={isAdminMode} isEditMode={isEditMode} goToStep={wizard.goToStep} />
       default:
         return null
     }
@@ -49,9 +71,30 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({ isAdminMod
     await wizard.submit()
   }
 
+  const submitLabel = isEditMode
+    ? 'Guardar cambios'
+    : isAdminMode
+    ? 'Registrar negocio'
+    : 'Enviar solicitud'
+
+  const confirmTitle = isEditMode
+    ? 'Confirmar cambios'
+    : isAdminMode
+    ? 'Confirmar registro'
+    : 'Confirmar solicitud'
+
+  const confirmDescription = isEditMode
+    ? '¿Está seguro de que desea guardar los cambios realizados en el negocio?'
+    : isAdminMode
+    ? '¿Está seguro de que desea registrar este negocio con la información proporcionada?'
+    : '¿Está seguro de que desea enviar la solicitud de afiliación con la información proporcionada?'
+
+  const primaryVariant = isEditMode ? 'navy' : 'primary'
+  const isFramed = !isAdminMode && !isEditMode && !isUserSelfManagement
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-4xl mx-auto">
-      <WizardProgress currentStep={wizard.currentStep} completedSteps={wizard.completedSteps} />
+    <div className={isFramed ? "bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-4xl mx-auto" : "w-full"}>
+      <WizardProgress currentStep={wizard.currentStep} completedSteps={wizard.completedSteps} isEditMode={isEditMode} />
 
       {wizard.errors.submit && (
         <div className="mb-6">
@@ -63,26 +106,35 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({ isAdminMod
         {renderStep()}
       </div>
 
-      <div className="flex justify-between items-center pt-6 border-t border-gray-100">
-        <Button
-          variant="outline"
-          onClick={wizard.prevStep}
-          disabled={wizard.currentStep === 0 || wizard.isSubmitting}
-        >
-          Anterior
-        </Button>
+      <div className="flex justify-between items-center pt-5 border-t border-brand-navy/10 mt-6">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+            disabled={wizard.isSubmitting}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="outline"
+            onClick={wizard.prevStep}
+            disabled={wizard.currentStep === 0 || wizard.isSubmitting}
+          >
+            Anterior
+          </Button>
+        </div>
 
         {wizard.currentStep === 5 ? (
           <Button
-            variant="primary"
+            variant={primaryVariant}
             onClick={() => setConfirmOpen(true)}
             disabled={wizard.isSubmitting}
           >
-            {wizard.isSubmitting ? 'Enviando...' : (isAdminMode ? 'Registrar negocio' : 'Enviar solicitud')}
+            {wizard.isSubmitting ? 'Guardando...' : submitLabel}
           </Button>
         ) : (
           <Button
-            variant="primary"
+            variant={primaryVariant}
             onClick={wizard.nextStep}
           >
             Siguiente
@@ -93,23 +145,23 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({ isAdminMod
       <Modal
         open={confirmOpen}
         onOpenChange={(open) => !open && setConfirmOpen(false)}
-        title={isAdminMode ? 'Confirmar registro' : 'Confirmar solicitud'}
-        description={isAdminMode
-          ? '¿Está seguro de que desea registrar este negocio con la información proporcionada?'
-          : '¿Está seguro de que desea enviar la solicitud de afiliación con la información proporcionada?'
-        }
+        title={confirmTitle}
+        description={confirmDescription}
         footer={
           <div className="flex items-center justify-between gap-3">
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancelar</Button>
             <Button variant="primary" onClick={handleConfirmedSubmit} disabled={wizard.isSubmitting}>
-              {wizard.isSubmitting ? 'Enviando...' : 'Confirmar'}
+              {wizard.isSubmitting ? 'Guardando...' : (isEditMode ? 'Guardar' : 'Confirmar')}
             </Button>
           </div>
         }
       >
         <p className="text-sm text-brand-ink/70">
-          Esta acción {isAdminMode ? 'registrará el negocio' : 'enviará la solicitud'} para su procesamiento.
-          {!isAdminMode && ' Recibirá un correo electrónico con la resolución de su solicitud.'}
+          {isEditMode
+            ? 'Los cambios se aplicarán inmediatamente a la información del negocio.'
+            : isAdminMode
+            ? 'Esta acción registrará el negocio directamente en el sistema.'
+            : 'Esta acción enviará la solicitud para su revisión. Recibirá un correo con la resolución.'}
         </p>
       </Modal>
     </div>
