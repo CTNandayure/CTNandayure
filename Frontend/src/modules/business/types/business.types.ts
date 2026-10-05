@@ -16,6 +16,7 @@ export interface BusinessRequestRecord {
   address: string
   latitude: number | null
   longitude: number | null
+  accuracy: number | null
   facebookUrl: string | null
   instagramUrl: string | null
   scheduleText: string
@@ -44,6 +45,7 @@ export interface BusinessRecord {
   address: string
   latitude: number | null
   longitude: number | null
+  accuracy: number | null
   facebookUrl: string | null
   instagramUrl: string | null
   scheduleText: string
@@ -76,6 +78,9 @@ export interface PublicBusiness {
   phone: string
   email: string
   address: string
+  latitude?: number | null
+  longitude?: number | null
+  accuracy?: number | null
   coverImageUrl: string
   galleryUrls: string[]
   facebookUrl: string | null

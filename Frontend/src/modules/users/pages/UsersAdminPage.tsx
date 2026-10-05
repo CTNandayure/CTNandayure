@@ -301,27 +301,47 @@ export default function UsersAdminPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-1">
             <label className="text-sm font-medium text-brand-navy">Nombre</label>
-            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input
+              lettersOnly
+              placeholder="Ejemplo: Juan"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[^\p{L}\s]/gu, '') })}
+            />
             {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-brand-navy">Primer apellido</label>
-            <Input value={form.first_lastname} onChange={(e) => setForm({ ...form, first_lastname: e.target.value })} />
+            <Input
+              lettersOnly
+              placeholder="Ejemplo: Pérez"
+              value={form.first_lastname}
+              onChange={(e) => setForm({ ...form, first_lastname: e.target.value.replace(/[^\p{L}\s]/gu, '') })}
+            />
             {errors.first_lastname && <p className="text-xs text-red-600">{errors.first_lastname}</p>}
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-brand-navy">Segundo apellido</label>
-            <Input value={form.second_lastname} onChange={(e) => setForm({ ...form, second_lastname: e.target.value })} />
+            <Input
+              lettersOnly
+              placeholder="Ejemplo: Rodríguez"
+              value={form.second_lastname}
+              onChange={(e) => setForm({ ...form, second_lastname: e.target.value.replace(/[^\p{L}\s]/gu, '') })}
+            />
             {errors.second_lastname && <p className="text-xs text-red-600">{errors.second_lastname}</p>}
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-brand-navy">Teléfono</label>
-            <PhoneInput value={form.phone} onValueChange={(phone: string) => setForm({ ...form, phone })} />
+            <PhoneInput
+              placeholder="8888-8888"
+              value={form.phone}
+              onValueChange={(phone: string) => setForm({ ...form, phone })}
+            />
             {errors.phone && <p className="text-xs text-red-600">{errors.phone}</p>}
           </div>
           <div className="space-y-1 md:col-span-2">
             <label className="text-sm font-medium text-brand-navy">Correo</label>
             <Input
+              placeholder="Ejemplo: juan@correo.com"
               value={form.email}
               disabled={Boolean(editingUser)}
               readOnly={Boolean(editingUser)}
@@ -411,3 +431,4 @@ export default function UsersAdminPage() {
     </div>
   )
 }
+

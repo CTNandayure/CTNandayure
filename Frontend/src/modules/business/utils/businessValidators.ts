@@ -144,6 +144,25 @@ export const validateStep = (step: number, data: any): Record<string, string> =>
 
     const schedErr = validateScheduleText(data.scheduleText || '')
     if (schedErr) errors.scheduleText = schedErr
+
+    const hasLat = data.latitude !== undefined && data.latitude !== null && data.latitude !== ''
+    const hasLng = data.longitude !== undefined && data.longitude !== null && data.longitude !== ''
+
+    if (hasLat && !hasLng) {
+      errors.longitude = 'Debe indicar la longitud si proporciona la latitud'
+    } else if (!hasLat && hasLng) {
+      errors.latitude = 'Debe indicar la latitud si proporciona la longitud'
+    } else if (hasLat && hasLng) {
+      const numLat = Number(data.latitude)
+      const numLng = Number(data.longitude)
+
+      if (Number.isNaN(numLat) || numLat < -90 || numLat > 90) {
+        errors.latitude = 'La latitud debe ser un número entre -90 y 90'
+      }
+      if (Number.isNaN(numLng) || numLng < -180 || numLng > 180) {
+        errors.longitude = 'La longitud debe ser un número entre -180 y 180'
+      }
+    }
   }
 
   if (step === 3) {

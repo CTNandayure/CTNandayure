@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useUserProfile } from './hooks/useUserProfile'
 import { CATEGORY_LABELS, DISTRICT_LABELS } from '../../../business/utils/constants'
 import type { BusinessRecord } from '../../../business/types/business.types'
+import { BusinessLocationView } from '../../../business/components/BusinessLocationPicker'
 
 const FacebookIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0">
@@ -308,6 +309,18 @@ export function UserProfile({ business, loadingBusiness = false, onGoToBusinessT
                         Dirección física
                       </p>
                       <p className="mt-1 text-sm text-brand-navy">{business.address || '-'}</p>
+                    </div>
+
+                    <div className="rounded-xl border border-brand-navy/10 bg-brand-paper p-5 sm:col-span-2">
+                      <p className="text-xs font-bold uppercase tracking-wide text-brand-ink/55 mb-2">
+                        Ubicación geográfica
+                      </p>
+                      <BusinessLocationView
+                        latitude={business.latitude}
+                        longitude={business.longitude}
+                        accuracy={business.accuracy}
+                        mapHeight="220px"
+                      />
                     </div>
 
                     <div className="rounded-xl border border-brand-navy/10 bg-brand-paper p-5 sm:col-span-2">

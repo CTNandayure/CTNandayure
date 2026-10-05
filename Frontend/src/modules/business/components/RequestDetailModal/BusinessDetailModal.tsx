@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { Badge, Button, Modal } from '../../../../components/ui'
 import { CATEGORY_LABELS, DISTRICT_LABELS } from '../../utils/constants'
 import type { BusinessRequestRecord, BusinessRecord } from '../../types/business.types'
+import { BusinessLocationView } from '../BusinessLocationPicker'
 
 const FacebookIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
@@ -289,6 +290,16 @@ export function BusinessDetailModal({ open, onClose, request, business }: Busine
             <div className="sm:col-span-2">
               <DetailField label="Dirección">
                 <p className="text-sm text-brand-ink/80 whitespace-pre-line">{data.address}</p>
+              </DetailField>
+            </div>
+            <div className="sm:col-span-2">
+              <DetailField label="Ubicación geográfica">
+                <BusinessLocationView
+                  latitude={data.latitude}
+                  longitude={data.longitude}
+                  accuracy={data.accuracy}
+                  mapHeight="220px"
+                />
               </DetailField>
             </div>
             <div className="sm:col-span-2">

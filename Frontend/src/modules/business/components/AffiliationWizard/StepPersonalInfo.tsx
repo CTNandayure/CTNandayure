@@ -31,18 +31,20 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({
         <FormField label="Nombre" error={errors.applicantName} htmlFor="applicantName">
           <Input
             id="applicantName"
+            lettersOnly
             value={formData.applicantName || ''}
-            onChange={(e) => updateField('applicantName', e.target.value)}
-            placeholder="Ej: Juan"
+            onChange={(e) => updateField('applicantName', e.target.value.replace(/[^\p{L}\s]/gu, ''))}
+            placeholder="Ejemplo: Juan"
           />
         </FormField>
 
         <FormField label="Primer apellido" error={errors.applicantFirstLastname} htmlFor="applicantFirstLastname">
           <Input
             id="applicantFirstLastname"
+            lettersOnly
             value={formData.applicantFirstLastname || ''}
-            onChange={(e) => updateField('applicantFirstLastname', e.target.value)}
-            placeholder="Ej: Pérez"
+            onChange={(e) => updateField('applicantFirstLastname', e.target.value.replace(/[^\p{L}\s]/gu, ''))}
+            placeholder="Ejemplo: Pérez"
           />
         </FormField>
       </div>
@@ -51,9 +53,10 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({
         <FormField label="Segundo apellido" error={errors.applicantSecondLastname} htmlFor="applicantSecondLastname">
           <Input
             id="applicantSecondLastname"
+            lettersOnly
             value={formData.applicantSecondLastname || ''}
-            onChange={(e) => updateField('applicantSecondLastname', e.target.value)}
-            placeholder="Ej: Rodríguez"
+            onChange={(e) => updateField('applicantSecondLastname', e.target.value.replace(/[^\p{L}\s]/gu, ''))}
+            placeholder="Ejemplo: Rodríguez"
           />
         </FormField>
 
@@ -79,7 +82,7 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({
           disabled={isEmailLocked}
           readOnly={isEmailLocked}
           onChange={isEmailLocked ? undefined : (e) => updateField('applicantEmail', e.target.value)}
-          placeholder="Ej: juan@correo.com"
+          placeholder="Ejemplo: juan@correo.com"
           className={isEmailLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed select-none' : ''}
         />
         {isEmailLocked && (
@@ -91,3 +94,4 @@ export const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({
     </div>
   )
 }
+

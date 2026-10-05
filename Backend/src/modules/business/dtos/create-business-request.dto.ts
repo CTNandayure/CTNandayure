@@ -9,7 +9,8 @@ import {
   MinLength,
   IsOptional,
   IsNumber,
-  IsEmail,
+  Min,
+  Max,
   IsUrl,
   IsIn,
 } from 'class-validator';
@@ -62,12 +63,21 @@ export class CreateBusinessRequestDto {
   address!: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsNumber({}, { message: 'La latitud debe ser un número' })
+  @Min(-90, { message: 'La latitud debe estar entre -90 y 90' })
+  @Max(90, { message: 'La latitud debe estar entre -90 y 90' })
   latitude?: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsNumber({}, { message: 'La longitud debe ser un número' })
+  @Min(-180, { message: 'La longitud debe estar entre -180 y 180' })
+  @Max(180, { message: 'La longitud debe estar entre -180 y 180' })
   longitude?: number;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'La precisión debe ser un número' })
+  @Min(0, { message: 'La precisión debe ser mayor o igual a 0' })
+  accuracy?: number;
 
   @IsOptional()
   @IsString()
@@ -107,18 +117,21 @@ export class CreateBusinessRequestDto {
   @IsNotEmpty({ message: 'El nombre del solicitante es requerido' })
   @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
   @MaxLength(50, { message: 'El nombre no puede exceder 50 caracteres' })
+  @Matches(/^[\p{L}\s]+$/u, { message: 'El nombre no es válido' })
   applicantName!: string;
 
   @IsString()
   @IsNotEmpty({ message: 'El primer apellido es requerido' })
   @MinLength(2, { message: 'El primer apellido debe tener al menos 2 caracteres' })
   @MaxLength(100, { message: 'El primer apellido no puede exceder 100 caracteres' })
+  @Matches(/^[\p{L}\s]+$/u, { message: 'El primer apellido no es válido' })
   applicantFirstLastname!: string;
 
   @IsString()
   @IsNotEmpty({ message: 'El segundo apellido es requerido' })
   @MinLength(2, { message: 'El segundo apellido debe tener al menos 2 caracteres' })
   @MaxLength(100, { message: 'El segundo apellido no puede exceder 100 caracteres' })
+  @Matches(/^[\p{L}\s]+$/u, { message: 'El segundo apellido no es válido' })
   applicantSecondLastname!: string;
 
   @IsString()
@@ -135,3 +148,4 @@ export class CreateBusinessRequestDto {
   })
   applicantEmail!: string;
 }
+

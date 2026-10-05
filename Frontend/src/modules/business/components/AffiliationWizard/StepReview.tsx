@@ -2,6 +2,7 @@ import React from 'react'
 import { CATEGORY_LABELS, DISTRICT_LABELS } from '../../utils/constants'
 import type { BusinessCategory, DistrictKey } from '../../types/business.types'
 import { cn } from '../../../../lib/cn'
+import { BusinessLocationView } from '../BusinessLocationPicker'
 
 interface StepReviewProps {
   formData: any
@@ -66,6 +67,17 @@ export const StepReview: React.FC<StepReviewProps> = ({ formData, isEditMode = f
         <Field label="Teléfono del negocio" value={formData.phone} />
         <Field label="Correo del negocio" value={formData.email} />
         <Field label="Dirección exacta" value={<span className="whitespace-pre-line">{formData.address}</span>} />
+        <Field
+          label="Ubicación geográfica"
+          value={
+            <BusinessLocationView
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              accuracy={formData.accuracy}
+              mapHeight="180px"
+            />
+          }
+        />
         {formData.facebookUrl && <Field label="Facebook" value={formData.facebookUrl} />}
         {formData.instagramUrl && <Field label="Instagram" value={formData.instagramUrl} />}
         <Field label="Horario" value={<span className="whitespace-pre-line">{formData.scheduleText}</span>} />

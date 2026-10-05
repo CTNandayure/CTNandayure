@@ -30,4 +30,5 @@ export const BUSINESS_STATUS_LABELS = {
   INACTIVE: 'Inactivo',
 }
 
-export const SCHEDULE_PLACEHOLDER = 'Ej: Lunes a Viernes: 8:00am - 5:00pm\nSábados: 9:00am - 12:00md\nDomingos: Cerrado'
+export const SCHEDULE_PLACEHOLDER = 'Ejemplo: Lunes a Viernes: 8:00am - 5:00pm\nSábados: 9:00am - 12:00md\nDomingos: Cerrado'
+

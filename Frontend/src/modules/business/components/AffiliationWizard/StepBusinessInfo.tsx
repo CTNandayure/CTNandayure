@@ -26,7 +26,7 @@ export const StepBusinessInfo: React.FC<StepBusinessInfoProps> = ({ formData, er
           id="businessName"
           value={formData.businessName || ''}
           onChange={(e) => updateField('businessName', e.target.value)}
-          placeholder="Ej: Cabinas Los Sueños"
+          placeholder="Ejemplo: Cabinas Los Sueños"
         />
       </FormField>
 
@@ -71,3 +71,4 @@ export const StepBusinessInfo: React.FC<StepBusinessInfoProps> = ({ formData, er
     </div>
   )
 }
+

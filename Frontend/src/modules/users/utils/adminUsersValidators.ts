@@ -1,18 +1,20 @@
 import { validateEmail as sharedValidateEmail, validatePhone as sharedValidatePhone } from '../../../utils/validation'
 
 export function validateName(value: string, label: string) {
-  if (!value.trim()) return label + ' es obligatorio'
-  if (value.trim().length < 2) return label + ' debe tener al menos 2 caracteres'
-  if (value.trim().length > 50) return label + ' no puede exceder 50 caracteres'
-  if (!/^[\p{L}\s'-]+$/u.test(value.trim())) return label + ' solo puede incluir letras, espacios, guiones y apóstrofes'
+  const trimmed = (value || '').trim()
+  if (!trimmed) return label + ' es obligatorio'
+  if (trimmed.length < 2) return label + ' debe tener al menos 2 caracteres'
+  if (trimmed.length > 50) return label + ' no puede exceder 50 caracteres'
+  if (!/^[\p{L}\s]+$/u.test(trimmed)) return label + ' no es válido'
   return ''
 }
 
 export function validateLastName(value: string, label: string) {
-  if (!value.trim()) return label + ' es obligatorio'
-  if (value.trim().length < 2) return label + ' debe tener al menos 2 caracteres'
-  if (value.trim().length > 100) return label + ' no puede exceder 100 caracteres'
-  if (!/^[\p{L}\s'-]+$/u.test(value.trim())) return label + ' solo puede incluir letras, espacios, guiones y apóstrofes'
+  const trimmed = (value || '').trim()
+  if (!trimmed) return label + ' es obligatorio'
+  if (trimmed.length < 2) return label + ' debe tener al menos 2 caracteres'
+  if (trimmed.length > 100) return label + ' no puede exceder 100 caracteres'
+  if (!/^[\p{L}\s]+$/u.test(trimmed)) return label + ' no es válido'
   return ''
 }
 
@@ -31,3 +33,4 @@ export function validatePasswordConfirmation(password: string, confirmation: str
   if (!confirmation.trim()) return 'Debes confirmar la contraseña'
   return password === confirmation ? '' : 'Las contraseñas no coinciden'
 }
+

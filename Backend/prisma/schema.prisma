@@ -160,6 +160,7 @@ model BusinessRequest {
   address         String          @db.VarChar(500)
   latitude        Float?
   longitude       Float?
+  accuracy        Float?
   facebookUrl     String?         @db.VarChar(255)
   instagramUrl    String?         @db.VarChar(255)
   scheduleText    String          @db.VarChar(500)
@@ -200,6 +201,7 @@ model Business {
   address         String          @db.VarChar(500)
   latitude        Float?
   longitude       Float?
+  accuracy        Float?
   facebookUrl     String?         @db.VarChar(255)
   instagramUrl    String?         @db.VarChar(255)
   scheduleText    String          @db.VarChar(500)

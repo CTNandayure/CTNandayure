@@ -1,5 +1,6 @@
 import React from 'react'
 import { FormField, Input, PhoneInput, Textarea } from '../../../../components/ui'
+import { BusinessLocationPicker } from '../BusinessLocationPicker'
 import { SCHEDULE_PLACEHOLDER } from '../../utils/constants'
 
 interface StepContactLocationProps {
@@ -27,7 +28,7 @@ export const StepContactLocation: React.FC<StepContactLocationProps> = ({ formDa
             type="email"
             value={formData.email || ''}
             onChange={(e) => updateField('email', e.target.value)}
-            placeholder="Ej: info@negocio.com"
+            placeholder="Ejemplo: info@negocio.com"
           />
         </FormField>
       </div>
@@ -37,10 +38,26 @@ export const StepContactLocation: React.FC<StepContactLocationProps> = ({ formDa
           id="address"
           value={formData.address || ''}
           onChange={(e) => updateField('address', e.target.value)}
-          placeholder="Ej: 100m norte del parque central..."
+          placeholder="Ejemplo: 100m norte del parque central..."
           rows={2}
         />
       </FormField>
+
+      <BusinessLocationPicker
+        latitude={formData.latitude}
+        longitude={formData.longitude}
+        accuracy={formData.accuracy}
+        onChange={(coords) => {
+          updateField('latitude', coords.latitude)
+          updateField('longitude', coords.longitude)
+          updateField('accuracy', coords.accuracy)
+        }}
+        errors={{
+          latitude: errors.latitude,
+          longitude: errors.longitude,
+          coordinates: errors.coordinates,
+        }}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Enlace de Facebook (Opcional)" error={errors.facebookUrl} htmlFor="facebookUrl">
@@ -74,3 +91,4 @@ export const StepContactLocation: React.FC<StepContactLocationProps> = ({ formDa
     </div>
   )
 }
+

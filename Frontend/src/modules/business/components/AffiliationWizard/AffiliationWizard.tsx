@@ -107,14 +107,15 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({
       </div>
 
       <div className="flex justify-between items-center pt-5 border-t border-brand-navy/10 mt-6">
+        <Button
+          variant="outline"
+          onClick={handleCancel}
+          disabled={wizard.isSubmitting}
+        >
+          Cancelar
+        </Button>
+
         <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={wizard.isSubmitting}
-          >
-            Cancelar
-          </Button>
           <Button
             variant="outline"
             onClick={wizard.prevStep}
@@ -122,24 +123,28 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({
           >
             Anterior
           </Button>
-        </div>
 
-        {wizard.currentStep === 5 ? (
-          <Button
-            variant={primaryVariant}
-            onClick={() => setConfirmOpen(true)}
-            disabled={wizard.isSubmitting}
-          >
-            {wizard.isSubmitting ? 'Guardando...' : submitLabel}
-          </Button>
-        ) : (
-          <Button
-            variant={primaryVariant}
-            onClick={wizard.nextStep}
-          >
-            Siguiente
-          </Button>
-        )}
+          {wizard.currentStep === 5 ? (
+            <Button
+              variant={primaryVariant}
+              onClick={() => {
+                if (wizard.validateAll()) {
+                  setConfirmOpen(true)
+                }
+              }}
+              disabled={wizard.isSubmitting}
+            >
+              {wizard.isSubmitting ? 'Guardando...' : submitLabel}
+            </Button>
+          ) : (
+            <Button
+              variant={primaryVariant}
+              onClick={wizard.nextStep}
+            >
+              Siguiente
+            </Button>
+          )}
+        </div>
       </div>
 
       <Modal

@@ -152,6 +152,7 @@ export class BusinessService {
         address: true,
         latitude: true,
         longitude: true,
+        accuracy: true,
         facebookUrl: true,
         instagramUrl: true,
         scheduleText: true,

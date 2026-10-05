@@ -75,6 +75,37 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
     return Object.keys(stepErrors).length === 0
   }
 
+  const validateAllSteps = (): { isValid: boolean; firstErrorStep: number; allErrors: Record<string, string> } => {
+    const allErrors: Record<string, string> = {}
+    let firstErrorStep = -1
+
+    for (let s = 0; s <= 4; s++) {
+      const stepErrors = validateStep(s, formData)
+      if (Object.keys(stepErrors).length > 0) {
+        if (firstErrorStep === -1) {
+          firstErrorStep = s
+        }
+        Object.assign(allErrors, stepErrors)
+      }
+    }
+
+    return {
+      isValid: firstErrorStep === -1,
+      firstErrorStep,
+      allErrors,
+    }
+  }
+
+  const validateAll = (): boolean => {
+    const { isValid, firstErrorStep, allErrors } = validateAllSteps()
+    if (!isValid) {
+      setErrors(allErrors)
+      setCurrentStep(firstErrorStep)
+      return false
+    }
+    return true
+  }
+
   const nextStep = () => {
     if (validateCurrentStep()) {
       if (!completedSteps.includes(currentStep)) {
@@ -89,14 +120,42 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
   }
 
   const goToStep = (step: number) => {
+    if (step > currentStep) {
+      for (let s = 0; s < step; s++) {
+        const stepErrors = validateStep(s, formData)
+        if (Object.keys(stepErrors).length > 0) {
+          setErrors(stepErrors)
+          setCurrentStep(s)
+          return
+        }
+      }
+    }
     setCurrentStep(step)
   }
 
   const submit = async () => {
-    if (!validateCurrentStep()) return
+    const { isValid, firstErrorStep, allErrors } = validateAllSteps()
+    if (!isValid) {
+      setErrors(allErrors)
+      setCurrentStep(firstErrorStep)
+      return
+    }
 
     setIsSubmitting(true)
     try {
+      const parsedLat =
+        formData.latitude !== null && formData.latitude !== undefined && formData.latitude !== ''
+          ? Number(formData.latitude)
+          : null
+      const parsedLng =
+        formData.longitude !== null && formData.longitude !== undefined && formData.longitude !== ''
+          ? Number(formData.longitude)
+          : null
+      const parsedAccuracy =
+        formData.accuracy !== null && formData.accuracy !== undefined && formData.accuracy !== ''
+          ? Number(formData.accuracy)
+          : null
+
       if (isEditMode) {
         const updatePayload = {
           businessName: formData.businessName,
@@ -106,8 +165,9 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
           phone: formData.phone,
           email: formData.email,
           address: formData.address,
-          latitude: formData.latitude,
-          longitude: formData.longitude,
+          latitude: parsedLat,
+          longitude: parsedLng,
+          accuracy: parsedAccuracy,
           facebookUrl: formData.facebookUrl || undefined,
           instagramUrl: formData.instagramUrl || undefined,
           scheduleText: formData.scheduleText,
@@ -123,15 +183,22 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
           await businessService.updateBusiness(targetId, updatePayload)
         }
       } else {
+        const createPayload = {
+          ...formData,
+          latitude: parsedLat ?? undefined,
+          longitude: parsedLng ?? undefined,
+          accuracy: parsedAccuracy ?? undefined,
+        }
+
         if (isAdminMode) {
-          await businessService.createBusinessDirect(formData)
+          await businessService.createBusinessDirect(createPayload)
         } else {
-          await businessService.createRequest(formData)
+          await businessService.createRequest(createPayload)
         }
       }
       setIsComplete(true)
     } catch (error: any) {
-      setErrors({ submit: error.message || 'Error al procesar la solicitud' })
+      setErrors((prev) => ({ ...prev, submit: error.message || 'Error al procesar la solicitud' }))
     } finally {
       setIsSubmitting(false)
     }
@@ -148,6 +215,8 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
     nextStep,
     prevStep,
     updateField,
+    validateAll,
     submit,
   }
 }
+

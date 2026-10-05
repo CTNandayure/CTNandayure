@@ -40,3 +40,9 @@ export function applyPhoneMask(rawInput: string): string {
   if (digits.length <= 4) return digits
   return digits.slice(0, 4) + '-' + digits.slice(4)
 }
+
+export function filterLettersAndSpaces(value: string): string {
+  if (!value) return ''
+  return value.normalize('NFC').replace(/[^\p{L}\s]/gu, '')
+}
+
