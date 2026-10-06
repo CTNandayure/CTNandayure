@@ -10,12 +10,34 @@ import {
   IsNumber,
   Min,
   Max,
-  IsEmail,
   IsUrl,
   IsIn,
 } from 'class-validator';
 
 export class UpdateBusinessDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
+  @MaxLength(50, { message: 'El nombre no puede exceder 50 caracteres' })
+  applicantName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(2, { message: 'El primer apellido debe tener al menos 2 caracteres' })
+  @MaxLength(100, { message: 'El primer apellido no puede exceder 100 caracteres' })
+  applicantFirstLastname?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(2, { message: 'El segundo apellido debe tener al menos 2 caracteres' })
+  @MaxLength(100, { message: 'El segundo apellido no puede exceder 100 caracteres' })
+  applicantSecondLastname?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(20, { message: 'El teléfono no puede exceder 20 caracteres' })
+  applicantPhone?: string;
+
   @IsOptional()
   @IsString()
   @MinLength(3)
@@ -113,3 +135,4 @@ export class UpdateBusinessDto {
   @IsString({ each: true })
   documentUrls?: string[];
 }
+

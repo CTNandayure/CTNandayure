@@ -162,7 +162,6 @@ export function UserProfile({ business, loadingBusiness = false, onGoToBusinessT
                 Usuario registrado
               </p>
               <h2 className="mt-2 text-2xl font-bold md:text-3xl">{fullName}</h2>
-              <p className="mt-1 text-sm text-white/70">{user.email}</p>
             </div>
           </div>
           <div className="rounded-lg bg-brand-yellow text-brand-navy px-5 py-3 text-sm font-semibold shadow-sm border border-brand-yellow">

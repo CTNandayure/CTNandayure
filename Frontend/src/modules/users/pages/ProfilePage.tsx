@@ -9,7 +9,7 @@ import type { BusinessRecord } from '../../business/types/business.types'
 import { cn } from '../../../lib/cn'
 
 export default function ProfilePage() {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
   const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState<'profile' | 'business'>('profile')
   const [myBusiness, setMyBusiness] = useState<BusinessRecord | null>(null)
@@ -124,6 +124,7 @@ export default function ProfilePage() {
                     onCancel={() => setActiveTab('profile')}
                     onComplete={() => {
                       loadMyBusiness()
+                      refreshUser()
                       showToast({
                         variant: 'success',
                         title: 'Negocio actualizado',
@@ -140,3 +141,4 @@ export default function ProfilePage() {
     </main>
   )
 }
+

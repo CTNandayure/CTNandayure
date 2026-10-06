@@ -190,8 +190,24 @@ export class UserService {
       data: dataToUpdate,
       include: {
         person: true,
+        business: true,
       },
     });
+
+    if (updatedUser.business?.requestId && Object.keys(personData).length > 0) {
+      const requestData: Record<string, string> = {};
+      if (personData.name) requestData.applicantName = personData.name;
+      if (personData.first_lastname) requestData.applicantFirstLastname = personData.first_lastname;
+      if (personData.second_lastname) requestData.applicantSecondLastname = personData.second_lastname;
+      if (personData.phone) requestData.applicantPhone = personData.phone;
+
+      if (Object.keys(requestData).length > 0) {
+        await (this.prisma as any).businessRequest.update({
+          where: { id: updatedUser.business.requestId },
+          data: requestData,
+        });
+      }
+    }
 
     this.logger.debug(`User ${id_person} updated by admin`);
     return new UserEntity(updatedUser);

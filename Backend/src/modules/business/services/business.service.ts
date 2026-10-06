@@ -163,7 +163,7 @@ export class BusinessService {
     });
   }
 
-    async getMyBusiness(userId: string) {
+  async getMyBusiness(userId: string) {
     const business = await (this.prisma as any).business.findUnique({
       where: { userId },
       include: { request: true, user: { include: { person: true } } },
@@ -176,13 +176,10 @@ export class BusinessService {
 
   async updateMyBusiness(userId: string, dto: UpdateBusinessDto) {
     const business = await this.getMyBusiness(userId);
-    return (this.prisma as any).business.update({
-      where: { id: business.id },
-      data: dto,
-    });
+    return this.applyBusinessUpdate(business, dto);
   }
 
-async getBusinessById(id: string) {
+  async getBusinessById(id: string) {
     const business = await (this.prisma as any).business.findUnique({
       where: { id },
       include: { request: true, user: { include: { person: true } } },
@@ -194,10 +191,72 @@ async getBusinessById(id: string) {
   }
 
   async updateBusiness(id: string, dto: UpdateBusinessDto) {
-    await this.getBusinessById(id);
-    return (this.prisma as any).business.update({
-      where: { id },
-      data: dto,
+    const business = await this.getBusinessById(id);
+    return this.applyBusinessUpdate(business, dto);
+  }
+
+  private async applyBusinessUpdate(business: any, dto: UpdateBusinessDto) {
+    return (this.prisma as any).$transaction(async (tx: any) => {
+      const {
+        applicantName,
+        applicantFirstLastname,
+        applicantSecondLastname,
+        applicantPhone,
+        ...businessFields
+      } = dto;
+
+      await tx.business.update({
+        where: { id: business.id },
+        data: businessFields,
+      });
+
+      const personData: Record<string, string> = {};
+      if (applicantName !== undefined && applicantName.trim() !== '') {
+        personData.name = applicantName.trim();
+      }
+      if (applicantFirstLastname !== undefined && applicantFirstLastname.trim() !== '') {
+        personData.first_lastname = applicantFirstLastname.trim();
+      }
+      if (applicantSecondLastname !== undefined && applicantSecondLastname.trim() !== '') {
+        personData.second_lastname = applicantSecondLastname.trim();
+      }
+      if (applicantPhone !== undefined && applicantPhone.trim() !== '') {
+        personData.phone = applicantPhone.trim();
+      }
+
+      if (Object.keys(personData).length > 0) {
+        if (business.userId) {
+          const user = await tx.user.findUnique({
+            where: { id_person: business.userId },
+          });
+          if (user?.personId) {
+            await tx.person.update({
+              where: { id_person: user.personId },
+              data: personData,
+            });
+          }
+        }
+
+        if (business.requestId) {
+          const requestData: Record<string, string> = {};
+          if (personData.name) requestData.applicantName = personData.name;
+          if (personData.first_lastname) requestData.applicantFirstLastname = personData.first_lastname;
+          if (personData.second_lastname) requestData.applicantSecondLastname = personData.second_lastname;
+          if (personData.phone) requestData.applicantPhone = personData.phone;
+
+          if (Object.keys(requestData).length > 0) {
+            await tx.businessRequest.update({
+              where: { id: business.requestId },
+              data: requestData,
+            });
+          }
+        }
+      }
+
+      return tx.business.findUnique({
+        where: { id: business.id },
+        include: { request: true, user: { include: { person: true } } },
+      });
     });
   }
 
@@ -241,3 +300,4 @@ async getBusinessById(id: string) {
     });
   }
 }
+

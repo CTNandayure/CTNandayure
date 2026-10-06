@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Alert, Button, Input } from '../../../../components/ui'
+import { Alert, Button, Input, useToast } from '../../../../components/ui'
 import { EyeIcon, EyeOffIcon } from '../../../../components/ui/icons'
 import { passwordChecks } from '../../utils/validators'
+import { useAuth } from '../../context/useAuth'
 import { useChangePassword } from './hooks/useChangePassword'
 
 interface ChangePasswordProps {
@@ -12,8 +13,21 @@ interface ChangePasswordProps {
 export function ChangePassword({ returnTo }: ChangePasswordProps) {
   const location = useLocation()
   const navigate = useNavigate()
+  const { logout } = useAuth()
+  const { showToast } = useToast()
   const destination = returnTo ?? (location.state as { from?: string } | null)?.from ?? '/users/perfil'
-  const form = useChangePassword()
+
+  const handleSuccess = () => {
+    logout()
+    showToast({
+      variant: 'success',
+      title: 'Contraseña actualizada',
+      description: 'Tu contraseña se cambió correctamente. Por favor, inicia sesión con tu nueva contraseña.',
+    })
+    navigate('/users/login', { replace: true })
+  }
+
+  const form = useChangePassword(handleSuccess)
   const [visible, setVisible] = useState({ current: false, next: false, confirmation: false })
 
   const toggleVisibility = (field: keyof typeof visible) =>
@@ -24,11 +38,6 @@ export function ChangePassword({ returnTo }: ChangePasswordProps) {
       {form.error && (
         <Alert variant="error" title="No se pudo cambiar la contraseña">
           {form.error}
-        </Alert>
-      )}
-      {form.success && (
-        <Alert variant="success" title="Contraseña actualizada">
-          Tu contraseña se cambió correctamente.
         </Alert>
       )}
 
@@ -127,3 +136,4 @@ export function ChangePassword({ returnTo }: ChangePasswordProps) {
     </form>
   )
 }
+

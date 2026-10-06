@@ -69,6 +69,13 @@ export interface BusinessRecord {
   } | null
 }
 
+export interface UpdateBusinessData extends Partial<BusinessRecord> {
+  applicantName?: string
+  applicantFirstLastname?: string
+  applicantSecondLastname?: string
+  applicantPhone?: string
+}
+
 export interface PublicBusiness {
   id: string
   businessName: string

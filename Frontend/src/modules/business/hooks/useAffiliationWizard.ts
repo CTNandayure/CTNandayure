@@ -26,11 +26,11 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
     if (initialData) {
       return {
         ...initialData,
-        applicantName: initialData.request?.applicantName ?? initialData.user?.person?.name ?? initialData.applicantName ?? '',
-        applicantFirstLastname: initialData.request?.applicantFirstLastname ?? initialData.user?.person?.first_lastname ?? initialData.applicantFirstLastname ?? '',
-        applicantSecondLastname: initialData.request?.applicantSecondLastname ?? initialData.user?.person?.second_lastname ?? initialData.applicantSecondLastname ?? '',
-        applicantPhone: formatPhoneDisplay(initialData.request?.applicantPhone ?? initialData.user?.person?.phone ?? initialData.applicantPhone ?? ''),
-        applicantEmail: initialData.request?.applicantEmail ?? initialData.user?.email ?? initialData.applicantEmail ?? '',
+        applicantName: initialData.user?.person?.name ?? initialData.request?.applicantName ?? initialData.applicantName ?? '',
+        applicantFirstLastname: initialData.user?.person?.first_lastname ?? initialData.request?.applicantFirstLastname ?? initialData.applicantFirstLastname ?? '',
+        applicantSecondLastname: initialData.user?.person?.second_lastname ?? initialData.request?.applicantSecondLastname ?? initialData.applicantSecondLastname ?? '',
+        applicantPhone: formatPhoneDisplay(initialData.user?.person?.phone ?? initialData.request?.applicantPhone ?? initialData.applicantPhone ?? ''),
+        applicantEmail: initialData.user?.email ?? initialData.request?.applicantEmail ?? initialData.applicantEmail ?? '',
         phone: formatPhoneDisplay(initialData.phone ?? ''),
       }
     }
@@ -45,11 +45,11 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
     if (initialData) {
       setFormData({
         ...initialData,
-        applicantName: initialData.request?.applicantName ?? initialData.user?.person?.name ?? initialData.applicantName ?? '',
-        applicantFirstLastname: initialData.request?.applicantFirstLastname ?? initialData.user?.person?.first_lastname ?? initialData.applicantFirstLastname ?? '',
-        applicantSecondLastname: initialData.request?.applicantSecondLastname ?? initialData.user?.person?.second_lastname ?? initialData.applicantSecondLastname ?? '',
-        applicantPhone: formatPhoneDisplay(initialData.request?.applicantPhone ?? initialData.user?.person?.phone ?? initialData.applicantPhone ?? ''),
-        applicantEmail: initialData.request?.applicantEmail ?? initialData.user?.email ?? initialData.applicantEmail ?? '',
+        applicantName: initialData.user?.person?.name ?? initialData.request?.applicantName ?? initialData.applicantName ?? '',
+        applicantFirstLastname: initialData.user?.person?.first_lastname ?? initialData.request?.applicantFirstLastname ?? initialData.applicantFirstLastname ?? '',
+        applicantSecondLastname: initialData.user?.person?.second_lastname ?? initialData.request?.applicantSecondLastname ?? initialData.applicantSecondLastname ?? '',
+        applicantPhone: formatPhoneDisplay(initialData.user?.person?.phone ?? initialData.request?.applicantPhone ?? initialData.applicantPhone ?? ''),
+        applicantEmail: initialData.user?.email ?? initialData.request?.applicantEmail ?? initialData.applicantEmail ?? '',
         phone: formatPhoneDisplay(initialData.phone ?? ''),
       })
       if (isEditMode) {
@@ -133,12 +133,12 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
     setCurrentStep(step)
   }
 
-  const submit = async () => {
+  const submit = async (): Promise<boolean> => {
     const { isValid, firstErrorStep, allErrors } = validateAllSteps()
     if (!isValid) {
       setErrors(allErrors)
       setCurrentStep(firstErrorStep)
-      return
+      return false
     }
 
     setIsSubmitting(true)
@@ -158,6 +158,10 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
 
       if (isEditMode) {
         const updatePayload = {
+          applicantName: formData.applicantName?.trim() || undefined,
+          applicantFirstLastname: formData.applicantFirstLastname?.trim() || undefined,
+          applicantSecondLastname: formData.applicantSecondLastname?.trim() || undefined,
+          applicantPhone: formData.applicantPhone?.trim() || undefined,
           businessName: formData.businessName,
           categories: formData.categories,
           district: formData.district,
@@ -197,8 +201,10 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
         }
       }
       setIsComplete(true)
+      return true
     } catch (error: any) {
       setErrors((prev) => ({ ...prev, submit: error.message || 'Error al procesar la solicitud' }))
+      return false
     } finally {
       setIsSubmitting(false)
     }

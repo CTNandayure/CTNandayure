@@ -3,6 +3,7 @@ import { tokenManager } from '../../users/services/tokenManager'
 import type {
   BusinessRequestRecord,
   BusinessRecord,
+  UpdateBusinessData,
   PublicBusiness,
   RequestStatus,
   BusinessStatus
@@ -80,18 +81,18 @@ export const businessService = {
     return request<BusinessRecord>(`/businesses/${id}`)
   },
 
-    getMyBusiness() {
+  getMyBusiness() {
     return request<BusinessRecord>('/businesses/my-business')
   },
 
-  updateMyBusiness(data: Partial<BusinessRecord>) {
+  updateMyBusiness(data: UpdateBusinessData) {
     return request<BusinessRecord>('/businesses/my-business', {
       method: 'PATCH',
       body: JSON.stringify(data),
     })
   },
 
-  updateBusiness(id: string, data: Partial<BusinessRecord>) {
+  updateBusiness(id: string, data: UpdateBusinessData) {
     return request<BusinessRecord>(`/businesses/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
@@ -121,3 +122,4 @@ export const businessService = {
     }, false)
   },
 }
+

@@ -163,19 +163,19 @@ export function BusinessDetailModal({ open, onClose, request, business }: Busine
 
   const personName = request
     ? [request.applicantName, request.applicantFirstLastname, request.applicantSecondLastname].filter(Boolean).join(' ').trim()
-    : business?.request
-    ? [business.request.applicantName, business.request.applicantFirstLastname, business.request.applicantSecondLastname].filter(Boolean).join(' ').trim()
     : business?.user?.person
     ? [business.user.person.name, business.user.person.first_lastname, business.user.person.second_lastname].filter(Boolean).join(' ').trim()
+    : business?.request
+    ? [business.request.applicantName, business.request.applicantFirstLastname, business.request.applicantSecondLastname].filter(Boolean).join(' ').trim()
     : null
 
   const personPhone = request
     ? request.applicantPhone
-    : business?.request?.applicantPhone ?? business?.user?.person?.phone ?? null
+    : business?.user?.person?.phone ?? business?.request?.applicantPhone ?? null
 
   const personEmail = request
     ? request.applicantEmail
-    : business?.request?.applicantEmail ?? business?.user?.email ?? null
+    : business?.user?.email ?? business?.request?.applicantEmail ?? null
 
   const registrationDate = data.createdAt ? new Date(data.createdAt).toLocaleString('es-CR') : null
 
@@ -441,3 +441,4 @@ export function BusinessDetailModal({ open, onClose, request, business }: Busine
     </>
   )
 }
+

@@ -40,11 +40,16 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({
   const handleCancel = onCancel ?? (() => navigate('/'))
   const [confirmOpen, setConfirmOpen] = useState(false)
 
-  if (wizard.isComplete) {
-    if (onComplete) {
+  const handleConfirmedSubmit = async () => {
+    setConfirmOpen(false)
+    const success = await wizard.submit()
+    if (success && onComplete) {
       onComplete()
-      return null
     }
+  }
+
+  if (wizard.isComplete) {
+    return null
   }
 
   const renderStep = () => {
@@ -64,11 +69,6 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({
       default:
         return null
     }
-  }
-
-  const handleConfirmedSubmit = async () => {
-    setConfirmOpen(false)
-    await wizard.submit()
   }
 
   const submitLabel = isEditMode
@@ -172,3 +172,4 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({
     </div>
   )
 }
+
