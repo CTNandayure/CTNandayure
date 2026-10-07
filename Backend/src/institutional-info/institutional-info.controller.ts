@@ -5,7 +5,9 @@ import { InstitutionalInfoService } from './institutional-info.service';
 
 @Controller('institutional-info')
 export class InstitutionalInfoController {
-  constructor(private readonly institutionalInfoService: InstitutionalInfoService) {}
+  constructor(
+    private readonly institutionalInfoService: InstitutionalInfoService,
+  ) {}
 
   @Get()
   get() {

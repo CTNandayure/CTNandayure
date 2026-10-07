@@ -29,14 +29,8 @@ export class UserService {
    * User starts in PENDIENTE_ACTIVACION status and activation email is sent
    */
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const {
-      name,
-      first_lastname,
-      second_lastname,
-      phone,
-      email,
-      role,
-    } = createUserDto;
+    const { name, first_lastname, second_lastname, phone, email, role } =
+      createUserDto;
 
     // Check if email already exists
     const existingUser = await this.prisma.user.findUnique({
@@ -196,8 +190,24 @@ export class UserService {
       data: dataToUpdate,
       include: {
         person: true,
+        business: true,
       },
     });
+
+    if (updatedUser.business?.requestId && Object.keys(personData).length > 0) {
+      const requestData: Record<string, string> = {};
+      if (personData.name) requestData.applicantName = personData.name;
+      if (personData.first_lastname) requestData.applicantFirstLastname = personData.first_lastname;
+      if (personData.second_lastname) requestData.applicantSecondLastname = personData.second_lastname;
+      if (personData.phone) requestData.applicantPhone = personData.phone;
+
+      if (Object.keys(requestData).length > 0) {
+        await (this.prisma as any).businessRequest.update({
+          where: { id: updatedUser.business.requestId },
+          data: requestData,
+        });
+      }
+    }
 
     this.logger.debug(`User ${id_person} updated by admin`);
     return new UserEntity(updatedUser);
@@ -222,7 +232,9 @@ export class UserService {
       },
     });
 
-    this.logger.debug(`User ${id_person} status updated to ${updateUserStatusDto.status}`);
+    this.logger.debug(
+      `User ${id_person} status updated to ${updateUserStatusDto.status}`,
+    );
     return new UserEntity(updatedUser);
   }
 
@@ -312,7 +324,8 @@ export class UserService {
     try {
       return await argon2.verify(hash, password);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Password verification error: ${errorMessage}`);
       return false;
     }

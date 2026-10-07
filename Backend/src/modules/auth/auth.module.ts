@@ -26,10 +26,7 @@ import { MailModule } from '@/modules/mail/mail.module';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const expiresIn = configService.get<string>(
-          'JWT_EXPIRES_IN',
-          '24h',
-        );
+        const expiresIn = configService.get<string>('JWT_EXPIRES_IN', '24h');
 
         return {
           secret: configService.get<string>('JWT_SECRET'),

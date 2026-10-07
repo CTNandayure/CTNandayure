@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import AdminHome from './pages/admin/AdminHome'
 import AdminLayout from './pages/admin/AdminLayout'
 import InstitutionalInfoAdminPage from './pages/admin/InstitutionalInfoAdminPage'
-import AffiliationPage from './pages/AffiliationPage'
+import AffiliationPage from './modules/business/pages/AffiliationPage'
 import LandingPage from './pages/LandingPage'
 import NewsDetailPage from './pages/NewsDetailPage'
 import NewsAdminPage from './modules/news/pages/NewsAdminPage'
@@ -16,6 +16,7 @@ import ProfilePage from './modules/users/pages/ProfilePage'
 import ChangePasswordPage from './modules/users/pages/ChangePasswordPage'
 import UsersAdminPage from './modules/users/pages/UsersAdminPage'
 import { ProtectedRoute } from './modules/users/components/ProtectedRoute/ProtectedRoute'
+import BusinessAdminPage from './modules/business/pages/BusinessAdminPage'
 
 export default function App() {
   return (
@@ -23,12 +24,12 @@ export default function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/afiliacion" element={<AffiliationPage />} />
       <Route path="/noticias/:slug" element={<NewsDetailPage />} />
-<Route path="/users/login" element={<LoginPage />} />
+      <Route path="/users/login" element={<LoginPage />} />
       <Route path="/users/recuperar" element={<ForgotPasswordPage />} />
       <Route path="/users/restablecer" element={<ResetPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/users/activar" element={<ActivateAccountPage />} />
-        <Route path="/users/activar-token" element={<ActivationTokenPage />} />
+      <Route path="/users/activar" element={<ActivateAccountPage />} />
+      <Route path="/users/activar-token" element={<ActivationTokenPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/users/perfil" element={<ProfilePage />} />
         <Route path="/users/cambiar-contrasena" element={<ChangePasswordPage />} />
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="noticias" element={<NewsAdminPage />} />
           <Route path="noticias/nueva" element={<NewsFormPage />} />
           <Route path="noticias/:id/editar" element={<NewsFormPage />} />
+          <Route path="negocios" element={<BusinessAdminPage />} />
           <Route path="usuarios" element={<UsersAdminPage />} />
         </Route>
       </Route>

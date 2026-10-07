@@ -1,4 +1,12 @@
-import { BadRequestException, Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
 import { AdminAuthGuard } from '../common/guards/admin-auth.guard';
@@ -25,6 +33,8 @@ export class UploadsController {
     if (!file) {
       throw new BadRequestException('No se recibió ningún archivo');
     }
-    return { url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}` };
+    return {
+      url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`,
+    };
   }
 }

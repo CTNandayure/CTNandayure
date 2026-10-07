@@ -42,9 +42,7 @@ export class AuthService {
     const user = await this.userService.getUserByEmail(email);
     if (!user) {
       // Don't reveal if email doesn't exist
-      throw new UnauthorizedException(
-        'El email o contraseña no son válidos',
-      );
+      throw new UnauthorizedException('El email o contraseña no son válidos');
     }
 
     // Check if user can login (must be ACTIVO)
@@ -58,9 +56,7 @@ export class AuthService {
     // Verify password
     const passwordHash = await this.userService.getPasswordHash(user.id_person);
     if (!passwordHash) {
-      throw new UnauthorizedException(
-        'El email o contraseña no son válidos',
-      );
+      throw new UnauthorizedException('El email o contraseña no son válidos');
     }
 
     const isPasswordValid = await this.userService.verifyPassword(
@@ -68,9 +64,7 @@ export class AuthService {
       passwordHash,
     );
     if (!isPasswordValid) {
-      throw new UnauthorizedException(
-        'El email o contraseña no son válidos',
-      );
+      throw new UnauthorizedException('El email o contraseña no son válidos');
     }
 
     // Generate JWT
@@ -87,10 +81,7 @@ export class AuthService {
     const token = this.generateSecureToken();
     const tokenHash = this.hashToken(token);
     const expiresAt = this.getTokenExpiration(
-      this.configService.get<string>(
-        'ACTIVATION_TOKEN_EXPIRES_IN',
-        '24h',
-      ),
+      this.configService.get<string>('ACTIVATION_TOKEN_EXPIRES_IN', '24h'),
     );
 
     try {
@@ -105,10 +96,9 @@ export class AuthService {
       this.logger.debug(`Activation token created for user ${userId}`);
       return token;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(
-        `Error creating activation token: ${errorMessage}`,
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error creating activation token: ${errorMessage}`);
       throw new BadRequestException('Error creating activation token');
     }
   }
@@ -173,8 +163,11 @@ export class AuthService {
       await this.mailService.sendActivationEmail(email, activationToken);
       this.logger.debug(`Activation email resent to ${email}`);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error resending activation email to ${email}: ${errorMessage}`);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Error resending activation email to ${email}: ${errorMessage}`,
+      );
     }
   }
 
@@ -196,7 +189,8 @@ export class AuthService {
         await this.mailService.sendPasswordResetEmail(email, resetToken);
         this.logger.debug(`Password reset email sent to ${email}`);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
         this.logger.error(
           `Error in forgot password for ${email}: ${errorMessage}`,
         );
@@ -215,10 +209,7 @@ export class AuthService {
     const token = this.generateSecureToken();
     const tokenHash = this.hashToken(token);
     const expiresAt = this.getTokenExpiration(
-      this.configService.get<string>(
-        'PASSWORD_RESET_TOKEN_EXPIRES_IN',
-        '1h',
-      ),
+      this.configService.get<string>('PASSWORD_RESET_TOKEN_EXPIRES_IN', '1h'),
     );
 
     try {
@@ -232,10 +223,9 @@ export class AuthService {
 
       return token;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(
-        `Error creating password reset token: ${errorMessage}`,
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error creating password reset token: ${errorMessage}`);
       throw new BadRequestException('Error creating password reset token');
     }
   }

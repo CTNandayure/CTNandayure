@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Alert, Badge, Button, Input, Modal, Select, useToast } from '../../../components/ui'
+import { Alert, Badge, Button, Input, Modal, PhoneInput, Select, useToast } from '../../../components/ui'
 import { usersAdminService, type UserAdminRecord } from '../services/usersAdminService'
 import { UsersTable } from '../components/UsersTable/UsersTable'
 import { validateEmail, validateLastName, validateName, validatePhone } from '../utils/adminUsersValidators'
@@ -24,6 +24,7 @@ export default function UsersAdminPage() {
   const [editingUser, setEditingUser] = useState<UserAdminRecord | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmSaveOpen, setConfirmSaveOpen] = useState(false)
   const [pendingStatusUser, setPendingStatusUser] = useState<UserAdminRecord | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [form, setForm] = useState(emptyForm)
@@ -85,6 +86,7 @@ export default function UsersAdminPage() {
 
   const closeFormModal = () => {
     setFormOpen(false)
+    setConfirmSaveOpen(false)
     setEditingUser(null)
     setForm(emptyForm)
     setErrors({})
@@ -111,8 +113,13 @@ export default function UsersAdminPage() {
     setFormOpen(true)
   }
 
-  const handleSubmit = async () => {
+  const handleOpenConfirm = () => {
     if (!validateForm()) return
+    setConfirmSaveOpen(true)
+  }
+
+  const handleConfirmedSubmit = async () => {
+    setConfirmSaveOpen(false)
     try {
       setIsSubmitting(true)
       if (editingUser) {
@@ -266,36 +273,86 @@ export default function UsersAdminPage() {
         </Modal>
       )}
 
-      <Modal size="lg" open={formOpen} onOpenChange={(open) => !open && closeFormModal()} title={editingUser ? 'Editar usuario' : 'Agregar usuario'} description={editingUser ? 'Actualiza los datos del usuario' : 'Crea una nueva cuenta para el sistema'} footer={
-        <div className="flex items-center justify-between gap-3">
-          <Button variant="outline" onClick={closeFormModal}>Cancelar</Button>
-          <Button variant="primary" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? 'Guardando...' : 'Guardar'}</Button>
-        </div>
-      }>
+      <Modal
+        size="lg"
+        open={formOpen}
+        onOpenChange={(open) => !open && closeFormModal()}
+        title={editingUser ? 'Editar usuario' : 'Agregar usuario'}
+        description={editingUser ? 'Actualiza los datos del usuario' : 'Crea una nueva cuenta para el sistema'}
+        footer={
+          <div className="flex items-center justify-between gap-3">
+            <Button variant="outline" onClick={closeFormModal}>
+              Cancelar
+            </Button>
+            <Button
+              variant={editingUser ? 'navy' : 'primary'}
+              onClick={handleOpenConfirm}
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? 'Guardando...'
+                : editingUser
+                ? 'Guardar cambios'
+                : 'Guardar'}
+            </Button>
+          </div>
+        }
+      >
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-1">
             <label className="text-sm font-medium text-brand-navy">Nombre</label>
-            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input
+              lettersOnly
+              placeholder="Ejemplo: Juan"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[^\p{L}\s]/gu, '') })}
+            />
             {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-brand-navy">Primer apellido</label>
-            <Input value={form.first_lastname} onChange={(e) => setForm({ ...form, first_lastname: e.target.value })} />
+            <Input
+              lettersOnly
+              placeholder="Ejemplo: Pérez"
+              value={form.first_lastname}
+              onChange={(e) => setForm({ ...form, first_lastname: e.target.value.replace(/[^\p{L}\s]/gu, '') })}
+            />
             {errors.first_lastname && <p className="text-xs text-red-600">{errors.first_lastname}</p>}
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-brand-navy">Segundo apellido</label>
-            <Input value={form.second_lastname} onChange={(e) => setForm({ ...form, second_lastname: e.target.value })} />
+            <Input
+              lettersOnly
+              placeholder="Ejemplo: Rodríguez"
+              value={form.second_lastname}
+              onChange={(e) => setForm({ ...form, second_lastname: e.target.value.replace(/[^\p{L}\s]/gu, '') })}
+            />
             {errors.second_lastname && <p className="text-xs text-red-600">{errors.second_lastname}</p>}
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-brand-navy">Teléfono</label>
-            <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <PhoneInput
+              placeholder="8888-8888"
+              value={form.phone}
+              onValueChange={(phone: string) => setForm({ ...form, phone })}
+            />
             {errors.phone && <p className="text-xs text-red-600">{errors.phone}</p>}
           </div>
           <div className="space-y-1 md:col-span-2">
             <label className="text-sm font-medium text-brand-navy">Correo</label>
-            <Input value={form.email} disabled={Boolean(editingUser)} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <Input
+              placeholder="Ejemplo: juan@correo.com"
+              value={form.email}
+              disabled={Boolean(editingUser)}
+              readOnly={Boolean(editingUser)}
+              onChange={editingUser ? undefined : (e) => setForm({ ...form, email: e.target.value })}
+              className={editingUser ? 'bg-gray-100 text-gray-500 cursor-not-allowed select-none' : ''}
+            />
+            {editingUser && (
+              <p className="mt-1 text-xs text-brand-ink/60">
+                El correo electrónico no es modificable.
+              </p>
+            )}
             {errors.email && <p className="text-xs text-red-600">{errors.email}</p>}
           </div>
           <div className="space-y-1">
@@ -306,6 +363,41 @@ export default function UsersAdminPage() {
             </Select>
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        open={confirmSaveOpen}
+        onOpenChange={(open) => !open && setConfirmSaveOpen(false)}
+        title={editingUser ? 'Confirmar cambios' : 'Confirmar nuevo usuario'}
+        description={
+          editingUser
+            ? '¿Está seguro de que desea guardar las modificaciones realizadas en este usuario?'
+            : '¿Está seguro de que desea registrar este nuevo usuario en el sistema?'
+        }
+        footer={
+          <div className="flex items-center justify-between gap-3">
+            <Button variant="outline" onClick={() => setConfirmSaveOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleConfirmedSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? 'Guardando...'
+                : editingUser
+                ? 'Guardar'
+                : 'Confirmar'}
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-brand-ink/70">
+          {editingUser
+            ? `Se aplicarán los cambios a la cuenta de "${form.name} ${form.first_lastname}".`
+            : `Se creará la cuenta para "${form.name} ${form.first_lastname}" y se enviará la activación al correo ${form.email}.`}
+        </p>
       </Modal>
 
       {!isLoading && users.length === 0 && (
@@ -339,3 +431,4 @@ export default function UsersAdminPage() {
     </div>
   )
 }
+

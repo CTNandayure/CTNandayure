@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Role } from '@/generated/prisma/enums';
 import { Roles } from '@/modules/auth/decorators';
 import { JwtAuthGuard, RolesGuard } from '@/modules/auth/guards';

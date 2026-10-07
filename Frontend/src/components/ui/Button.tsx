@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 
-export type ButtonVariant = 'primary' | 'accent' | 'outline' | 'outlineOnDark' | 'text'
+export type ButtonVariant = 'primary' | 'accent' | 'outline' | 'outlineOnDark' | 'text' | 'navy'
 export type ButtonSize = 'md' | 'sm'
 
 const base =
@@ -12,6 +12,7 @@ const base =
 const colorVariants: Record<Exclude<ButtonVariant, 'text'>, string> = {
   primary: 'bg-brand-green text-white hover:bg-brand-green-strong',
   accent: 'bg-brand-yellow text-brand-navy hover:brightness-95',
+  navy: 'bg-brand-navy text-white hover:bg-brand-navy-soft',
   outline: 'border-[1.5px] border-brand-navy/30 text-brand-navy hover:border-brand-navy',
   // for buttons placed over a photo or a dark/navy section, e.g. the hero
   outlineOnDark: 'border-[1.5px] border-white/60 text-white hover:border-white',

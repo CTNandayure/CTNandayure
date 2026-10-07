@@ -10,6 +10,7 @@ import { UploadsModule } from './uploads/uploads.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { MailModule } from './modules/mail/mail.module';
+import { BusinessModule } from './modules/business/business.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MailModule } from './modules/mail/mail.module';
     AuthModule,
     UserModule,
     MailModule,
+    BusinessModule,
   ],
   controllers: [AppController],
   providers: [
