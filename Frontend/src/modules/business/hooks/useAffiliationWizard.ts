@@ -172,8 +172,9 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
           latitude: parsedLat,
           longitude: parsedLng,
           accuracy: parsedAccuracy,
-          facebookUrl: formData.facebookUrl || undefined,
-          instagramUrl: formData.instagramUrl || undefined,
+          // null (not undefined) so clearing the field actually removes the saved link.
+          facebookUrl: formData.facebookUrl?.trim() || null,
+          instagramUrl: formData.instagramUrl?.trim() || null,
           scheduleText: formData.scheduleText,
           coverImageUrl: formData.coverImageUrl,
           galleryUrls: formData.galleryUrls,

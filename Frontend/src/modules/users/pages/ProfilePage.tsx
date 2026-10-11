@@ -108,6 +108,20 @@ export default function ProfilePage() {
                     {businessError}
                   </Alert>
                 </div>
+              ) : myBusiness && myBusiness.businessStatus !== 'ACTIVE' ? (
+                <div className="space-y-4 rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm md:p-8">
+                  <Alert variant="warning" title="Su negocio está inactivo">
+                    Mientras esté inactivo no puede modificar su información. Comuníquese con la Cámara para reactivarlo.
+                    Puede consultar los datos registrados en la pestaña «Información de la cuenta».
+                  </Alert>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('profile')}
+                    className="cursor-pointer text-sm font-semibold text-brand-navy hover:underline"
+                  >
+                    Ver información de mi negocio →
+                  </button>
+                </div>
               ) : myBusiness ? (
                 <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 md:p-8 shadow-sm">
                   <div className="mb-6 border-b border-brand-navy/10 pb-4">

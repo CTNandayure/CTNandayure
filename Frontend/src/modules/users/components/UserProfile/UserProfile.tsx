@@ -232,7 +232,7 @@ export function UserProfile({ business, loadingBusiness = false, onGoToBusinessT
                   </p>
                 </div>
 
-                {onGoToBusinessTab && (
+                {onGoToBusinessTab && business?.businessStatus !== 'INACTIVE' && (
                   <Button
                     variant="navy"
                     onClick={onGoToBusinessTab}

@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { Alert, Button, FormActions, FormField, ImageUpload, Input, Textarea, useToast } from '../../components/ui'
 import { API_URL } from '../../content/api'
 import { useInstitutionalInfo } from '../../content/hooks/useInstitutionalInfo'
+import { tokenManager } from '../../modules/users/services/tokenManager'
 
 interface InstitutionalInfoFormValues {
   aboutTitle: string
@@ -52,11 +53,20 @@ export default function InstitutionalInfoAdminPage() {
 
   async function onSubmit(values: InstitutionalInfoFormValues) {
     try {
+      const token = tokenManager.get()
       const res = await fetch(`${API_URL}/institutional-info`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify(values),
       })
+      if (res.status === 401 || res.status === 403) {
+        showToast({
+          variant: 'error',
+          title: 'No se pudo guardar',
+          description: 'Tu sesión expiró o no tenés permiso para editar. Iniciá sesión de nuevo.',
+        })
+        return
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       showToast({ variant: 'success', title: 'Cambios guardados', description: 'La información pública ya está actualizada.' })
       refetch()
