@@ -17,6 +17,10 @@ import ChangePasswordPage from './modules/users/pages/ChangePasswordPage'
 import UsersAdminPage from './modules/users/pages/UsersAdminPage'
 import { ProtectedRoute } from './modules/users/components/ProtectedRoute/ProtectedRoute'
 import BusinessAdminPage from './modules/business/pages/BusinessAdminPage'
+import ActivitiesPage from './modules/activities/pages/ActivitiesPage'
+import ActivityDetailPage from './modules/activities/pages/ActivityDetailPage'
+import ActivitiesAdminPage from './modules/activities/pages/ActivitiesAdminPage'
+import ActivityAdminFormPage from './modules/activities/pages/ActivityAdminFormPage'
 
 export default function App() {
   return (
@@ -24,6 +28,8 @@ export default function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/afiliacion" element={<AffiliationPage />} />
       <Route path="/noticias/:slug" element={<NewsDetailPage />} />
+      <Route path="/actividades" element={<ActivitiesPage />} />
+      <Route path="/actividades/:slug" element={<ActivityDetailPage />} />
       <Route path="/users/login" element={<LoginPage />} />
       <Route path="/users/recuperar" element={<ForgotPasswordPage />} />
       <Route path="/users/restablecer" element={<ResetPasswordPage />} />
@@ -42,6 +48,9 @@ export default function App() {
           <Route path="noticias/nueva" element={<NewsFormPage />} />
           <Route path="noticias/:id/editar" element={<NewsFormPage />} />
           <Route path="negocios" element={<BusinessAdminPage />} />
+          <Route path="actividades" element={<ActivitiesAdminPage />} />
+          <Route path="actividades/nueva" element={<ActivityAdminFormPage />} />
+          <Route path="actividades/:id/editar" element={<ActivityAdminFormPage />} />
           <Route path="usuarios" element={<UsersAdminPage />} />
         </Route>
       </Route>

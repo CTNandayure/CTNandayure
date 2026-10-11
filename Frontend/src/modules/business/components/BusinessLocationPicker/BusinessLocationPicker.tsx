@@ -19,6 +19,8 @@ export interface BusinessLocationPickerProps {
     longitude?: string
     coordinates?: string
   }
+  title?: string
+  description?: string
 }
 
 export const BusinessLocationPicker: React.FC<BusinessLocationPickerProps> = ({
@@ -27,6 +29,8 @@ export const BusinessLocationPicker: React.FC<BusinessLocationPickerProps> = ({
   accuracy,
   onChange,
   errors = {},
+  title = 'Ubicación geográfica',
+  description = 'Ubica el negocio en el mapa para facilitar que los turistas lleguen con facilidad.',
 }) => {
   const [latInput, setLatInput] = useState<string>(
     latitude !== null && latitude !== undefined ? String(latitude) : '',
@@ -173,14 +177,12 @@ export const BusinessLocationPicker: React.FC<BusinessLocationPickerProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h4 className="font-semibold text-brand-navy text-base flex items-center gap-2">
-            <span>Ubicación geográfica</span>
+            <span>{title}</span>
             <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
               Opcional
             </span>
           </h4>
-          <p className="text-xs text-gray-500 mt-0.5">
-            Ubica el negocio en el mapa para facilitar que los turistas lleguen con facilidad.
-          </p>
+          <p className="text-xs text-gray-500 mt-0.5">{description}</p>
         </div>
 
         <div className="flex items-center gap-2">

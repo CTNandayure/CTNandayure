@@ -1,61 +1,45 @@
-import { useMemo, useState } from 'react'
-import { Badge, Card, Container, SectionHeading } from '../../components/ui'
-import { cn } from '../../lib/cn'
-import { useActivities } from '../../content/activities'
-import type { Activity } from '../../content/types'
+import { Alert, Button, Container, SectionHeading } from '../../components/ui'
+import { ActivityCard } from '../../modules/activities/components/ActivityCard/ActivityCard'
+import { usePublicActivities } from '../../modules/activities/hooks/usePublicActivities'
 
-const CATEGORIES: Array<Activity['category'] | 'Todas'> = ['Todas', 'Playa', 'Montaña', 'Cultura', 'Gastronomía']
+const LANDING_LIMIT = 6
 
+// Real data: the next published activities of active businesses. The full list,
+// with filters, lives at /actividades.
 export function ActivitiesSection() {
-  const { data: activities } = useActivities()
-  const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>('Todas')
-
-  const filtered = useMemo(
-    () => (filter === 'Todas' ? activities : activities.filter((a) => a.category === filter)),
-    [activities, filter],
-  )
+  const { data: activities, status } = usePublicActivities({ limit: LANDING_LIMIT })
 
   return (
     <section id="actividades" className="bg-white py-16 md:py-24">
       <Container className="flex flex-col gap-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading eyebrow="Qué hacer" eyebrowColor="green" title="Actividades para todos los gustos" />
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setFilter(c)}
-                className={cn(
-                  'rounded-full px-4 py-2 text-sm font-semibold transition-colors',
-                  filter === c ? 'bg-brand-navy text-white' : 'border border-brand-navy/15 text-brand-navy hover:border-brand-navy/40',
-                )}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
+          <Button href="/actividades" variant="outline">
+            Ver todas las actividades
+          </Button>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((a) => (
-            <Card key={a.id}>
-              {a.imageUrl ? (
-                <img src={a.imageUrl} alt="" className="h-36 w-full object-cover" />
-              ) : (
-                <div className="flex h-36 items-center justify-center bg-brand-sand text-center text-xs uppercase tracking-wide text-brand-ink/40">
-                  Foto — {a.title}
-                </div>
-              )}
-              <div className="flex flex-col gap-2 p-5">
-                <Badge color="teal">{a.category}</Badge>
-                <h3 className="text-base font-bold text-brand-navy">{a.title}</h3>
-                <p className="text-sm leading-relaxed text-brand-ink/70">{a.description}</p>
-                <span className="text-xs font-medium text-brand-ink/50">{a.districts.join(', ')}</span>
-              </div>
-            </Card>
-          ))}
-        </div>
+        {status === 'loading' && <p className="text-brand-ink/60">Cargando actividades…</p>}
+
+        {status === 'error' && (
+          <Alert variant="error" title="No se pudieron cargar las actividades">
+            Intente recargar la página en unos minutos.
+          </Alert>
+        )}
+
+        {status === 'ready' && activities.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-brand-navy/15 p-10 text-center text-brand-ink/60">
+            Pronto publicaremos nuevas actividades de los negocios afiliados.
+          </div>
+        )}
+
+        {status === 'ready' && activities.length > 0 && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {activities.map((activity) => (
+              <ActivityCard key={activity.id} activity={activity} />
+            ))}
+          </div>
+        )}
       </Container>
     </section>
   )

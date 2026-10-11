@@ -24,15 +24,6 @@ export interface District {
   imageUrl: string | null
 }
 
-export interface Activity {
-  id: string
-  title: string
-  description: string
-  districts: string[]
-  category: 'Playa' | 'Montaña' | 'Cultura' | 'Gastronomía'
-  imageUrl: string | null
-}
-
 export interface Business {
   id: string
   businessName: string
