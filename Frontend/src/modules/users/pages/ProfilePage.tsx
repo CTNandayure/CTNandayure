@@ -4,6 +4,7 @@ import { UserProfile } from '../components/UserProfile/UserProfile'
 import { useAuth } from '../context/useAuth'
 import { businessService } from '../../business/services/businessService'
 import { AffiliationWizard } from '../../business/components/AffiliationWizard/AffiliationWizard'
+import { MyActivitiesPanel } from '../../activities/components/MyActivitiesPanel/MyActivitiesPanel'
 import { Alert, useToast } from '../../../components/ui'
 import type { BusinessRecord } from '../../business/types/business.types'
 import { cn } from '../../../lib/cn'
@@ -11,7 +12,7 @@ import { cn } from '../../../lib/cn'
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth()
   const { showToast } = useToast()
-  const [activeTab, setActiveTab] = useState<'profile' | 'business'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'business' | 'activities'>('profile')
   const [myBusiness, setMyBusiness] = useState<BusinessRecord | null>(null)
   const [loadingBusiness, setLoadingBusiness] = useState(false)
   const [businessError, setBusinessError] = useState<string | null>(null)
@@ -84,6 +85,18 @@ export default function ProfilePage() {
             >
               Mi Negocio
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('activities')}
+              className={cn(
+                '-mb-px border-b-2 px-5 pb-3 pt-2 text-sm font-semibold transition-colors cursor-pointer',
+                activeTab === 'activities'
+                  ? 'border-brand-navy text-brand-navy'
+                  : 'border-transparent text-brand-ink/60 hover:text-brand-navy',
+              )}
+            >
+              Mis actividades
+            </button>
           </div>
         )}
 
@@ -135,6 +148,10 @@ export default function ProfilePage() {
                 </div>
               ) : null}
             </div>
+          )}
+
+          {activeTab === 'activities' && isBusinessUser && (
+            <MyActivitiesPanel businessInactive={myBusiness?.businessStatus === 'INACTIVE'} />
           )}
         </div>
       </div>

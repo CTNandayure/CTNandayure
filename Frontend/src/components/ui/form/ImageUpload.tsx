@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from 'react'
 import { API_URL } from '../../../content/api'
+import { tokenManager } from '../../../modules/users/services/tokenManager'
 import { useToast } from '../ToastProvider'
 
 interface ImageUploadProps {
@@ -23,12 +24,22 @@ export function ImageUpload({ label, value, onChange }: ImageUploadProps) {
     try {
       const body = new FormData()
       body.append('file', file)
-      const res = await fetch(`${API_URL}/uploads/image`, { method: 'POST', body })
+      // The endpoint requires a logged-in admin or business owner.
+      const token = tokenManager.get()
+      const res = await fetch(`${API_URL}/uploads/image`, {
+        method: 'POST',
+        body,
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const json = (await res.json()) as { url: string }
       onChange(json.url)
     } catch {
-      showToast({ variant: 'error', title: 'No se pudo subir la imagen', description: 'Intentá de nuevo con otro archivo.' })
+      showToast({
+        variant: 'error',
+        title: 'No se pudo subir la imagen',
+        description: 'Use una imagen de hasta 5 MB e intente de nuevo. Si el problema sigue, vuelva a iniciar sesión.',
+      })
     } finally {
       setUploading(false)
       if (inputRef.current) inputRef.current.value = ''

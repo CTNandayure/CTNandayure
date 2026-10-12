@@ -9,13 +9,18 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
-import { AdminAuthGuard } from '../common/guards/admin-auth.guard';
+import { Role } from '@/generated/prisma/enums';
+import { Roles } from '@/modules/auth/decorators';
+import { JwtAuthGuard, RolesGuard } from '@/modules/auth/guards';
 import { imageStorage } from './image-storage';
 
 @Controller('uploads')
 export class UploadsController {
+  // Admins upload for news / institutional info, business owners for their
+  // activities. Everyone else must log in first.
   @Post('image')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.NEGOCIO)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: imageStorage,

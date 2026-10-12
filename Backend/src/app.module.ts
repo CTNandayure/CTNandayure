@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { MailModule } from './modules/mail/mail.module';
 import { BusinessModule } from './modules/business/business.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { BusinessModule } from './modules/business/business.module';
     UserModule,
     MailModule,
     BusinessModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [

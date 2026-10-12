@@ -218,8 +218,76 @@ model Business {
   userId          String?         @unique
   user            User?           @relation(fields: [userId], references: [id_person])
 
+  activities      Activity[]
+
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
   @@map("businesses")
+}
+
+// Activity category (OTHER lets the business write its own label)
+enum ActivityCategory {
+  SURF           // Surf
+  HIKING         // Senderismo
+  CULTURE        // Cultura
+  AGROTOURISM    // Agroturismo
+  GASTRONOMY     // Gastronomía
+  WILDLIFE       // Avistamiento de fauna
+  OTHER          // Otra (se escribe en customCategory)
+}
+
+// How an activity is scheduled
+enum ActivityScheduleType {
+  SPECIFIC_DATE  // Un día específico
+  RECURRING      // Se repite por días de la semana
+}
+
+// Publication lifecycle. INACTIVA is set by an admin (moderation): the owner
+// cannot publish it again until an admin reactivates it.
+enum ActivityStatus {
+  BORRADOR
+  PUBLICADA
+  INACTIVA
+}
+
+// Tourist activity offered by an affiliated business
+model Activity {
+  id               String               @id @default(cuid())
+  slug             String               @unique
+
+  name             String               @db.VarChar(150)
+  description      String               @db.VarChar(2000)
+  category         ActivityCategory
+  customCategory   String?              @db.VarChar(60)
+  durationMinutes  Int
+  requirements     String?              @db.VarChar(1000)
+
+  // SPECIFIC_DATE: startDate is the day. RECURRING: daysOfWeek (ISO 1=Mon..7=Sun)
+  // plus an optional validity window [startDate, endDate]. Dates are plain DATEs
+  // and startTime is "HH:mm" so there is no time-zone drift (Costa Rica, UTC-6).
+  scheduleType     ActivityScheduleType
+  startDate        DateTime?            @db.Date
+  endDate          DateTime?            @db.Date
+  daysOfWeek       Int[]
+  startTime        String               @db.VarChar(5)
+
+  meetingPoint     String               @db.VarChar(500)
+  meetingLatitude  Float?
+  meetingLongitude Float?
+
+  imageUrl         String?              @db.VarChar(500)
+
+  status           ActivityStatus       @default(BORRADOR)
+  publishedAt      DateTime?
+
+  businessId       String
+  business         Business             @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@index([businessId])
+  @@index([status])
+  @@map("activities")
 }
