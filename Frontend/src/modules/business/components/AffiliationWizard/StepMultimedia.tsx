@@ -9,6 +9,10 @@ interface StepMultimediaProps {
   updateField: (field: string, value: any) => void
 }
 
+// The server says why it refused a file (wrong type, content that isn't an image,
+// too many uploads in a row...): show that instead of a generic failure.
+const reason = (error: unknown) => (error instanceof Error ? error.message : undefined)
+
 export const StepMultimedia: React.FC<StepMultimediaProps> = ({ formData, errors, updateField }) => {
   const { showToast } = useToast()
   const [uploadingCover, setUploadingCover] = useState(false)
@@ -24,34 +28,40 @@ export const StepMultimedia: React.FC<StepMultimediaProps> = ({ formData, errors
       updateField('coverImageUrl', res.url)
       showToast({ variant: 'success', title: 'Foto de portada cargada' })
     } catch (error) {
-      showToast({ variant: 'error', title: 'Error al subir la imagen' })
+      showToast({ variant: 'error', title: 'Error al subir la imagen', description: reason(error) })
     } finally {
       setUploadingCover(false)
+      e.target.value = ''
     }
   }
 
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
+    const input = e.target
+    const files = Array.from(input.files || [])
     if (!files.length) return
     const current = formData.galleryUrls || []
     if (current.length + files.length > 5) {
       showToast({ variant: 'warning', title: 'Máximo 5 fotos permitidas' })
+      input.value = ''
       return
     }
 
+    // Photos that did upload are kept even if a later one fails, so a retry only
+    // has to send the rest.
+    const newUrls: string[] = []
     try {
       setUploadingGallery(true)
-      const newUrls: string[] = []
       for (const file of files) {
         const res = await businessService.uploadFile(file)
         newUrls.push(res.url)
       }
-      updateField('galleryUrls', [...current, ...newUrls])
       showToast({ variant: 'success', title: 'Fotos agregadas a la galería' })
     } catch (error) {
-      showToast({ variant: 'error', title: 'Error al subir imágenes' })
+      showToast({ variant: 'error', title: 'Error al subir imágenes', description: reason(error) })
     } finally {
+      if (newUrls.length) updateField('galleryUrls', [...current, ...newUrls])
       setUploadingGallery(false)
+      input.value = ''
     }
   }
 
@@ -66,9 +76,10 @@ export const StepMultimedia: React.FC<StepMultimediaProps> = ({ formData, errors
       updateField('galleryUrls', current)
       showToast({ variant: 'success', title: 'Imagen reemplazada' })
     } catch (error) {
-      showToast({ variant: 'error', title: 'Error al reemplazar la imagen' })
+      showToast({ variant: 'error', title: 'Error al reemplazar la imagen', description: reason(error) })
     } finally {
       setReplacingIndex(null)
+      e.target.value = ''
     }
   }
 

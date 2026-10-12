@@ -14,10 +14,17 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { mkdirSync } from 'fs';
+import { mkdirSync, promises as fs } from 'fs';
 import { BusinessService } from '../services/business.service';
+import { BUSINESS_UPLOADS_DIR } from '../services/business-files.service';
+import {
+  MIME_TO_KIND,
+  detectFileKind,
+  readFileHead,
+} from '../utils/file-signature';
+import { assertUploadedFromThisSite } from '../utils/uploaded-urls';
 import { JwtAuthGuard, RolesGuard } from '@/modules/auth/guards';
 import { Roles } from '@/modules/auth/decorators/roles.decorator';
 import {
@@ -33,7 +40,11 @@ export class BusinessController {
   constructor(private readonly businessService: BusinessService) {}
 
   @Post('requests')
-  async createRequest(@Body() dto: CreateBusinessRequestDto) {
+  async createRequest(
+    @Body() dto: CreateBusinessRequestDto,
+    @Req() req: Request,
+  ) {
+    assertUploadedFromThisSite(dto, req);
     return this.businessService.createRequest(dto);
   }
 
@@ -77,37 +88,34 @@ export class BusinessController {
     return this.businessService.getPublicBusinesses();
   }
 
+  // Public on purpose: the affiliation form uploads photos and documents before the
+  // applicant has an account. So it is rate limited per IP (see BusinessModule), keeps
+  // only the types in MIME_TO_KIND, and checks the file's real content, not just what
+  // the client claims it is.
   @Post('upload')
+  @UseGuards(ThrottlerGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const dir = './uploads/businesses';
-          mkdirSync(dir, { recursive: true });
-          cb(null, dir);
+          mkdirSync(BUSINESS_UPLOADS_DIR, { recursive: true });
+          cb(null, BUSINESS_UPLOADS_DIR);
         },
+        // The extension comes from the accepted type, never from the client's file
+        // name: a ".html" sent as an image must not be stored (and served) as HTML.
         filename: (req, file, cb) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, `business-${uniqueSuffix}${extname(file.originalname)}`);
+          cb(null, `business-${uniqueSuffix}.${MIME_TO_KIND[file.mimetype]}`);
         },
       }),
       fileFilter: (req, file, cb) => {
-        const allowedMimes = [
-          'image/jpeg',
-          'image/png',
-          'image/webp',
-          'image/jpg',
-          'image/gif',
-          'application/pdf',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        ];
-        if (allowedMimes.includes(file.mimetype)) {
+        if (MIME_TO_KIND[file.mimetype]) {
           cb(null, true);
         } else {
           cb(
-            new Error(
-              'Tipo de archivo no soportado. Use imágenes, PDF o DOCX.',
+            new BadRequestException(
+              'Tipo de archivo no soportado. Use imágenes (JPG, PNG, WEBP, GIF), PDF o DOCX.',
             ),
             false,
           );
@@ -125,6 +133,15 @@ export class BusinessController {
     if (!file) {
       throw new BadRequestException('No se recibió ningún archivo');
     }
+
+    const kind = detectFileKind(await readFileHead(file.path));
+    if (kind === null || kind !== MIME_TO_KIND[file.mimetype]) {
+      await fs.unlink(file.path).catch(() => undefined);
+      throw new BadRequestException(
+        'El contenido del archivo no corresponde a una imagen, PDF o DOCX válido.',
+      );
+    }
+
     return {
       url: `${req.protocol}://${req.get('host')}/uploads/businesses/${file.filename}`,
     };
@@ -144,6 +161,7 @@ export class BusinessController {
     @Req() req: any,
     @Body() dto: UpdateBusinessDto,
   ) {
+    assertUploadedFromThisSite(dto, req as Request);
     return this.businessService.updateMyBusiness(req.user.id_person, dto);
   }
 
@@ -160,7 +178,9 @@ export class BusinessController {
   async updateBusiness(
     @Param('id') id: string,
     @Body() dto: UpdateBusinessDto,
+    @Req() req: Request,
   ) {
+    assertUploadedFromThisSite(dto, req);
     return this.businessService.updateBusiness(id, dto);
   }
 
@@ -177,7 +197,11 @@ export class BusinessController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async createBusinessDirect(@Body() dto: CreateBusinessDirectDto) {
+  async createBusinessDirect(
+    @Body() dto: CreateBusinessDirectDto,
+    @Req() req: Request,
+  ) {
+    assertUploadedFromThisSite(dto, req);
     return this.businessService.createBusinessDirect(dto);
   }
 }

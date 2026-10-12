@@ -13,6 +13,12 @@ import {
   IsUrl,
   IsIn,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsUploadedDocumentUrl,
+  IsUploadedImageUrl,
+} from '../validators/uploaded-file-url';
+import { blankToNull } from './transforms';
 
 export class UpdateBusinessDto {
   @IsOptional()
@@ -100,16 +106,24 @@ export class UpdateBusinessDto {
   accuracy?: number;
 
   @IsOptional()
+  @Transform(blankToNull)
   @IsString()
-  @IsUrl()
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'La URL de Facebook no es válida' },
+  )
   @MaxLength(255)
-  facebookUrl?: string;
+  facebookUrl?: string | null;
 
   @IsOptional()
+  @Transform(blankToNull)
   @IsString()
-  @IsUrl()
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'La URL de Instagram no es válida' },
+  )
   @MaxLength(255)
-  instagramUrl?: string;
+  instagramUrl?: string | null;
 
   @IsOptional()
   @IsString()
@@ -119,6 +133,9 @@ export class UpdateBusinessDto {
 
   @IsOptional()
   @IsString()
+  @IsUploadedImageUrl({
+    message: 'La foto de portada debe ser una imagen subida desde el sitio',
+  })
   coverImageUrl?: string;
 
   @IsOptional()
@@ -126,6 +143,11 @@ export class UpdateBusinessDto {
   @ArrayMinSize(3)
   @ArrayMaxSize(5)
   @IsString({ each: true })
+  @IsUploadedImageUrl({
+    each: true,
+    message:
+      'Las fotos de la galería deben ser imágenes subidas desde el sitio',
+  })
   galleryUrls?: string[];
 
   @IsOptional()
@@ -133,6 +155,11 @@ export class UpdateBusinessDto {
   @ArrayMinSize(1)
   @ArrayMaxSize(5)
   @IsString({ each: true })
+  @IsUploadedDocumentUrl({
+    each: true,
+    message:
+      'Los documentos deben ser archivos PDF, DOCX o imágenes subidos desde el sitio',
+  })
   documentUrls?: string[];
 }
 

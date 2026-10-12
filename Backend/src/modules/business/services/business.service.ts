@@ -3,9 +3,11 @@ import {
   Logger,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '@/prisma/prisma.service';
+import type { Prisma } from '@/generated/prisma/client';
 import { UserService } from '@/modules/user/services/user.service';
 import { MailService } from '@/modules/mail/services/mail.service';
 import {
@@ -15,6 +17,43 @@ import {
   UpdateBusinessStatusDto,
   RejectRequestDto,
 } from '../dtos';
+import { BusinessFilesService } from './business-files.service';
+
+// What the owner and admin screens read about the account linked to a business.
+// Never `include: { user: true }` here: that row also holds passwordHash.
+const BUSINESS_INCLUDE = {
+  request: true,
+  user: {
+    select: {
+      email: true,
+      person: {
+        select: {
+          name: true,
+          first_lastname: true,
+          second_lastname: true,
+          phone: true,
+        },
+      },
+    },
+  },
+} satisfies Prisma.BusinessInclude;
+
+type BusinessWithAccount = Prisma.BusinessGetPayload<{
+  include: typeof BUSINESS_INCLUDE;
+}>;
+
+// Businesses and affiliation requests keep their photos and documents the same way.
+interface StoredFiles {
+  coverImageUrl: string;
+  galleryUrls: string[];
+  documentUrls: string[];
+}
+
+const storedFileUrls = (row: StoredFiles) => [
+  row.coverImageUrl,
+  ...row.galleryUrls,
+  ...row.documentUrls,
+];
 
 @Injectable()
 export class BusinessService {
@@ -25,6 +64,7 @@ export class BusinessService {
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    private readonly files: BusinessFilesService,
   ) {}
 
   async createRequest(dto: CreateBusinessRequestDto) {
@@ -120,20 +160,15 @@ export class BusinessService {
     await (this.prisma as any).businessRequest.delete({
       where: { id },
     });
+    // The rejected applicant's photos and legal documents have no owner left.
+    await this.files.removeUnreferenced(storedFileUrls(request as StoredFiles));
 
     return { message: 'Solicitud rechazada y eliminada correctamente' };
   }
 
   async getBusinesses() {
-    return (this.prisma as any).business.findMany({
-      include: {
-        request: true,
-        user: {
-          include: {
-            person: true,
-          },
-        },
-      },
+    return this.prisma.business.findMany({
+      include: BUSINESS_INCLUDE,
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -163,10 +198,12 @@ export class BusinessService {
     });
   }
 
-  async getMyBusiness(userId: string) {
-    const business = await (this.prisma as any).business.findUnique({
+  // One account owns one business (Business.userId is unique), so the account in the
+  // token is the only thing that decides which business is read or changed here.
+  async getMyBusiness(userId: string): Promise<BusinessWithAccount> {
+    const business = await this.prisma.business.findUnique({
       where: { userId },
-      include: { request: true, user: { include: { person: true } } },
+      include: BUSINESS_INCLUDE,
     });
     if (!business) {
       throw new NotFoundException('No se encontró ningún negocio asociado a esta cuenta');
@@ -176,13 +213,20 @@ export class BusinessService {
 
   async updateMyBusiness(userId: string, dto: UpdateBusinessDto) {
     const business = await this.getMyBusiness(userId);
+    // A deactivated business can still be looked at, but only the Cámara can
+    // change it (admin edits go through updateBusiness).
+    if (business.businessStatus !== 'ACTIVE') {
+      throw new ForbiddenException(
+        'Su negocio está inactivo. Comuníquese con la Cámara para reactivarlo.',
+      );
+    }
     return this.applyBusinessUpdate(business, dto);
   }
 
-  async getBusinessById(id: string) {
-    const business = await (this.prisma as any).business.findUnique({
+  async getBusinessById(id: string): Promise<BusinessWithAccount> {
+    const business = await this.prisma.business.findUnique({
       where: { id },
-      include: { request: true, user: { include: { person: true } } },
+      include: BUSINESS_INCLUDE,
     });
     if (!business) {
       throw new NotFoundException('Negocio no encontrado');
@@ -195,8 +239,11 @@ export class BusinessService {
     return this.applyBusinessUpdate(business, dto);
   }
 
-  private async applyBusinessUpdate(business: any, dto: UpdateBusinessDto) {
-    return (this.prisma as any).$transaction(async (tx: any) => {
+  private async applyBusinessUpdate(
+    business: BusinessWithAccount,
+    dto: UpdateBusinessDto,
+  ) {
+    const updated = await (this.prisma as any).$transaction(async (tx: any) => {
       const {
         applicantName,
         applicantFirstLastname,
@@ -255,9 +302,14 @@ export class BusinessService {
 
       return tx.business.findUnique({
         where: { id: business.id },
-        include: { request: true, user: { include: { person: true } } },
+        include: BUSINESS_INCLUDE,
       });
     });
+
+    // Photos and documents the update replaced or removed are no longer needed.
+    await this.files.removeUnreferenced(storedFileUrls(business));
+
+    return updated;
   }
 
   async updateBusinessStatus(id: string, dto: UpdateBusinessStatusDto) {

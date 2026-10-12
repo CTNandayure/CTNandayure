@@ -71,7 +71,7 @@ export function BusinessesSection() {
         </div>
 
         <p className="text-sm italic text-brand-ink/50">
-          *Directorio de ejemplo. ¿Tenés un negocio en Nandayure?{' '}
+          ¿Tenés un negocio en Nandayure?{' '}
           <Button href="/afiliacion" variant="text">
             Afiliate a la Cámara
           </Button>

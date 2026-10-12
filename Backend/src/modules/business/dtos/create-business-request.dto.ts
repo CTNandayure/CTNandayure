@@ -14,6 +14,12 @@ import {
   IsUrl,
   IsIn,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsUploadedDocumentUrl,
+  IsUploadedImageUrl,
+} from '../validators/uploaded-file-url';
+import { blankToNull } from './transforms';
 
 export class CreateBusinessRequestDto {
   @IsString()
@@ -80,16 +86,24 @@ export class CreateBusinessRequestDto {
   accuracy?: number;
 
   @IsOptional()
+  @Transform(blankToNull)
   @IsString()
-  @IsUrl({}, { message: 'La URL de Facebook no es válida' })
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'La URL de Facebook no es válida' },
+  )
   @MaxLength(255)
-  facebookUrl?: string;
+  facebookUrl?: string | null;
 
   @IsOptional()
+  @Transform(blankToNull)
   @IsString()
-  @IsUrl({}, { message: 'La URL de Instagram no es válida' })
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'La URL de Instagram no es válida' },
+  )
   @MaxLength(255)
-  instagramUrl?: string;
+  instagramUrl?: string | null;
 
   @IsString()
   @IsNotEmpty({ message: 'El horario es requerido' })
@@ -99,18 +113,31 @@ export class CreateBusinessRequestDto {
 
   @IsString()
   @IsNotEmpty({ message: 'La imagen de portada es requerida' })
+  @IsUploadedImageUrl({
+    message: 'La foto de portada debe ser una imagen subida desde el sitio',
+  })
   coverImageUrl!: string;
 
   @IsArray()
   @ArrayMinSize(3, { message: 'Debe proporcionar al menos 3 imágenes de galería' })
   @ArrayMaxSize(5, { message: 'No puede subir más de 5 imágenes de galería' })
   @IsString({ each: true })
+  @IsUploadedImageUrl({
+    each: true,
+    message:
+      'Las fotos de la galería deben ser imágenes subidas desde el sitio',
+  })
   galleryUrls!: string[];
 
   @IsArray()
   @ArrayMinSize(1, { message: 'Debe proporcionar al menos 1 documento' })
   @ArrayMaxSize(5, { message: 'No puede subir más de 5 documentos' })
   @IsString({ each: true })
+  @IsUploadedDocumentUrl({
+    each: true,
+    message:
+      'Los documentos deben ser archivos PDF, DOCX o imágenes subidos desde el sitio',
+  })
   documentUrls!: string[];
 
   @IsString()

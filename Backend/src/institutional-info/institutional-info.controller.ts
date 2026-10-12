@@ -1,5 +1,7 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
-import { AdminAuthGuard } from '../common/guards/admin-auth.guard';
+import { Role } from '@/generated/prisma/enums';
+import { Roles } from '@/modules/auth/decorators';
+import { JwtAuthGuard, RolesGuard } from '@/modules/auth/guards';
 import { UpdateInstitutionalInfoDto } from './dto/update-institutional-info.dto';
 import { InstitutionalInfoService } from './institutional-info.service';
 
@@ -15,7 +17,8 @@ export class InstitutionalInfoController {
   }
 
   @Patch()
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   update(@Body() dto: UpdateInstitutionalInfoDto) {
     return this.institutionalInfoService.update(dto);
   }

@@ -9,32 +9,41 @@ interface StepDocumentsProps {
   updateField: (field: string, value: any) => void
 }
 
+// The server says why it refused a file (wrong type, content that isn't a real PDF or
+// DOCX, too many uploads in a row...): show that instead of a generic failure.
+const reason = (error: unknown) => (error instanceof Error ? error.message : undefined)
+
 export const StepDocuments: React.FC<StepDocumentsProps> = ({ formData, errors, updateField }) => {
   const { showToast } = useToast()
   const [uploading, setUploading] = useState(false)
   const [replacingIndex, setReplacingIndex] = useState<number | null>(null)
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
+    const input = e.target
+    const files = Array.from(input.files || [])
     if (!files.length) return
     const current = formData.documentUrls || []
     if (current.length + files.length > 5) {
       showToast({ variant: 'warning', title: 'Máximo 5 documentos permitidos' })
+      input.value = ''
       return
     }
 
+    // Documents that did upload are kept even if a later one fails, so a retry only
+    // has to send the rest.
+    const newUrls: string[] = []
     try {
       setUploading(true)
-      const newUrls: string[] = []
       for (const file of files) {
         const res = await businessService.uploadFile(file)
         newUrls.push(res.url)
       }
-      updateField('documentUrls', [...current, ...newUrls])
     } catch (error) {
-      showToast({ variant: 'error', title: 'Error al subir documentos' })
+      showToast({ variant: 'error', title: 'Error al subir documentos', description: reason(error) })
     } finally {
+      if (newUrls.length) updateField('documentUrls', [...current, ...newUrls])
       setUploading(false)
+      input.value = ''
     }
   }
 
@@ -49,9 +58,10 @@ export const StepDocuments: React.FC<StepDocumentsProps> = ({ formData, errors, 
       updateField('documentUrls', current)
       showToast({ variant: 'success', title: 'Documento reemplazado' })
     } catch (error) {
-      showToast({ variant: 'error', title: 'Error al reemplazar documento' })
+      showToast({ variant: 'error', title: 'Error al reemplazar documento', description: reason(error) })
     } finally {
       setReplacingIndex(null)
+      e.target.value = ''
     }
   }
 
