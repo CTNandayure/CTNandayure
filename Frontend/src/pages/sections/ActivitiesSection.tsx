@@ -14,7 +14,7 @@ export function ActivitiesSection() {
       <Container className="flex flex-col gap-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading eyebrow="Qué hacer" eyebrowColor="green" title="Actividades para todos los gustos" />
-          <Button href="/actividades" variant="outline">
+          <Button href="/actividades" variant="navy">
             Ver todas las actividades
           </Button>
         </div>

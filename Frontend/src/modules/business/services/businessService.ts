@@ -77,6 +77,10 @@ export const businessService = {
     return request<PublicBusiness[]>('/businesses/public', {}, false)
   },
 
+  getPublicBusinessById(id: string) {
+    return request<PublicBusiness>(`/businesses/public/${id}`, {}, false)
+  },
+
   getBusinessById(id: string) {
     return request<BusinessRecord>(`/businesses/${id}`)
   },

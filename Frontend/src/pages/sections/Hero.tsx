@@ -1,11 +1,18 @@
 import { Button } from '../../components/ui'
 import { useInstitutionalInfo } from '../../content/hooks/useInstitutionalInfo'
+import type { InstitutionalInfo } from '../../content/types'
+import { cn } from '../../lib/cn'
 
-export function Hero() {
-  const { data: info } = useInstitutionalInfo()
+interface HeroProps {
+  previewData?: Partial<InstitutionalInfo>
+}
+
+export function Hero({ previewData }: HeroProps = {}) {
+  const { data: dbInfo } = useInstitutionalInfo()
+  const info = previewData ? { ...dbInfo, ...previewData } : dbInfo
 
   return (
-    <section id="inicio" className="relative flex min-h-[560px] items-end overflow-hidden">
+    <section id="inicio" className={cn('relative flex min-h-[500px] items-end overflow-hidden', previewData && 'rounded-2xl shadow-sm')}>
       {info?.heroImageUrl ? (
         <img src={info.heroImageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
       ) : (

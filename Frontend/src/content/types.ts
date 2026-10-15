@@ -26,6 +26,7 @@ export interface District {
 
 export interface Business {
   id: string
+  slug?: string | null
   businessName: string
   categories: string[]
   district: string

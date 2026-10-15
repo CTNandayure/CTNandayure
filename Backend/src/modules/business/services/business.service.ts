@@ -4,12 +4,14 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '@/prisma/prisma.service';
 import type { Prisma } from '@/generated/prisma/client';
 import { UserService } from '@/modules/user/services/user.service';
 import { MailService } from '@/modules/mail/services/mail.service';
+import { slugify } from '@/news/utils/slugify';
 import {
   CreateBusinessRequestDto,
   CreateBusinessDirectDto,
@@ -18,6 +20,8 @@ import {
   RejectRequestDto,
 } from '../dtos';
 import { BusinessFilesService } from './business-files.service';
+
+const RESERVED_SLUGS = new Set(['public', 'admin', 'afiliacion', 'nueva', 'crear', 'perfil']);
 
 // What the owner and admin screens read about the account linked to a business.
 // Never `include: { user: true }` here: that row also holds passwordHash.
@@ -56,7 +60,7 @@ const storedFileUrls = (row: StoredFiles) => [
 ];
 
 @Injectable()
-export class BusinessService {
+export class BusinessService implements OnModuleInit {
   private readonly logger = new Logger(BusinessService.name);
 
   constructor(
@@ -66,6 +70,48 @@ export class BusinessService {
     private readonly configService: ConfigService,
     private readonly files: BusinessFilesService,
   ) {}
+
+  async onModuleInit() {
+    await this.backfillSlugs();
+  }
+
+  async generateUniqueSlug(name: string, excludeId?: string): Promise<string> {
+    const base = slugify(name) || 'negocio';
+    let slug = base;
+    let suffix = 2;
+    while (
+      RESERVED_SLUGS.has(slug) ||
+      (await (this.prisma as any).business.findFirst({
+        where: {
+          slug,
+          ...(excludeId ? { NOT: { id: excludeId } } : {}),
+        },
+      }))
+    ) {
+      slug = `${base}-${suffix}`;
+      suffix += 1;
+    }
+    return slug;
+  }
+
+  private async backfillSlugs() {
+    try {
+      const withoutSlug = await (this.prisma as any).business.findMany({
+        where: { slug: null },
+        select: { id: true, businessName: true },
+      });
+      for (const b of withoutSlug) {
+        const slug = await this.generateUniqueSlug(b.businessName, b.id);
+        await (this.prisma as any).business.update({
+          where: { id: b.id },
+          data: { slug },
+        });
+        this.logger.log(`Backfilled slug "${slug}" for business "${b.businessName}" (${b.id})`);
+      }
+    } catch (err) {
+      this.logger.error('Error backfilling business slugs', err);
+    }
+  }
 
   async createRequest(dto: CreateBusinessRequestDto) {
     this.logger.debug('Creating business request');
@@ -133,9 +179,12 @@ export class BusinessService {
         role: 'NEGOCIO',
       });
 
+      const slug = await this.generateUniqueSlug(businessData.businessName);
+
       const business = await tx.business.create({
         data: {
           ...businessData,
+          slug,
           businessStatus: 'ACTIVE',
           requestId: id,
           userId: user.id_person,
@@ -178,6 +227,7 @@ export class BusinessService {
       where: { businessStatus: 'ACTIVE' },
       select: {
         id: true,
+        slug: true,
         businessName: true,
         categories: true,
         district: true,
@@ -196,6 +246,42 @@ export class BusinessService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async getPublicBusinessById(idOrSlug: string) {
+    const business = await (this.prisma as any).business.findFirst({
+      where: {
+        businessStatus: 'ACTIVE',
+        OR: [
+          { slug: idOrSlug },
+          { id: idOrSlug },
+        ],
+      },
+      select: {
+        id: true,
+        slug: true,
+        businessName: true,
+        categories: true,
+        district: true,
+        description: true,
+        phone: true,
+        email: true,
+        address: true,
+        latitude: true,
+        longitude: true,
+        accuracy: true,
+        facebookUrl: true,
+        instagramUrl: true,
+        scheduleText: true,
+        coverImageUrl: true,
+        galleryUrls: true,
+        createdAt: true,
+      },
+    });
+    if (!business) {
+      throw new NotFoundException('Negocio no encontrado o no disponible');
+    }
+    return business;
   }
 
   // One account owns one business (Business.userId is unique), so the account in the
@@ -252,9 +338,18 @@ export class BusinessService {
         ...businessFields
       } = dto;
 
+      let slugUpdate: Record<string, string> = {};
+      if (!(business as any).slug || (businessFields.businessName && businessFields.businessName !== business.businessName)) {
+        const slug = await this.generateUniqueSlug(businessFields.businessName || business.businessName, business.id);
+        slugUpdate = { slug };
+      }
+
       await tx.business.update({
         where: { id: business.id },
-        data: businessFields,
+        data: {
+          ...businessFields,
+          ...slugUpdate,
+        },
       });
 
       const personData: Record<string, string> = {};
@@ -340,9 +435,12 @@ export class BusinessService {
         role: 'NEGOCIO',
       });
 
+      const slug = await this.generateUniqueSlug(businessData.businessName);
+
       const business = await tx.business.create({
         data: {
           ...businessData,
+          slug,
           businessStatus: 'ACTIVE',
           userId: user.id_person,
         },

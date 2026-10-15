@@ -15,11 +15,12 @@ import type { NewsItem } from '../../../../content/types'
 interface NewsTableProps {
   news: NewsItem[]
   isLoading: boolean
+  onView: (item: NewsItem) => void
   onEdit: (item: NewsItem) => void
   onToggleStatus: (item: NewsItem) => void
 }
 
-export function NewsTable({ news, isLoading, onEdit, onToggleStatus }: NewsTableProps) {
+export function NewsTable({ news, isLoading, onView, onEdit, onToggleStatus }: NewsTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [pageSize, setPageSize] = useState(10)
   const [pageIndex, setPageIndex] = useState(0)
@@ -60,6 +61,7 @@ export function NewsTable({ news, isLoading, onEdit, onToggleStatus }: NewsTable
         const isPublished = item.status === 'PUBLICADO'
         return (
           <div className="flex justify-end gap-1.5">
+            <TableActionButton variant="view" onClick={() => onView(item)}>Ver</TableActionButton>
             <TableActionButton variant="edit" onClick={() => onEdit(item)}>Editar</TableActionButton>
             <TableActionButton variant={isPublished ? 'unpublish' : 'publish'} onClick={() => onToggleStatus(item)}>
               {isPublished ? 'Despublicar' : 'Publicar'}
@@ -68,7 +70,7 @@ export function NewsTable({ news, isLoading, onEdit, onToggleStatus }: NewsTable
         )
       },
     },
-  ], [])
+  ], [onView, onEdit, onToggleStatus])
 
   const features = tableFeatures({
     rowSortingFeature,

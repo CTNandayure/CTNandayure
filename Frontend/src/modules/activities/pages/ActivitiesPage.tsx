@@ -75,6 +75,9 @@ export default function ActivitiesPage() {
       <main>
         <section className="border-b border-brand-navy/10 bg-white py-12 md:py-16">
           <Container className="flex flex-col gap-8">
+            <Button href="/#actividades" variant="text" className="w-fit">
+              ← Volver a actividades
+            </Button>
             <SectionHeading
               eyebrow="Qué hacer"
               eyebrowColor="green"

@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import AdminHome from './pages/admin/AdminHome'
 import AdminLayout from './pages/admin/AdminLayout'
 import InstitutionalInfoAdminPage from './pages/admin/InstitutionalInfoAdminPage'
@@ -6,7 +6,6 @@ import AffiliationPage from './modules/business/pages/AffiliationPage'
 import LandingPage from './pages/LandingPage'
 import NewsDetailPage from './pages/NewsDetailPage'
 import NewsAdminPage from './modules/news/pages/NewsAdminPage'
-import NewsFormPage from './modules/news/pages/NewsFormPage'
 import LoginPage from './modules/users/pages/LoginPage'
 import ForgotPasswordPage from './modules/users/pages/ForgotPasswordPage'
 import ResetPasswordPage from './modules/users/pages/ResetPasswordPage'
@@ -17,19 +16,25 @@ import ChangePasswordPage from './modules/users/pages/ChangePasswordPage'
 import UsersAdminPage from './modules/users/pages/UsersAdminPage'
 import { ProtectedRoute } from './modules/users/components/ProtectedRoute/ProtectedRoute'
 import BusinessAdminPage from './modules/business/pages/BusinessAdminPage'
+import BusinessesPage from './modules/business/pages/BusinessesPage'
+import BusinessDetailPage from './modules/business/pages/BusinessDetailPage'
 import ActivitiesPage from './modules/activities/pages/ActivitiesPage'
 import ActivityDetailPage from './modules/activities/pages/ActivityDetailPage'
 import ActivitiesAdminPage from './modules/activities/pages/ActivitiesAdminPage'
-import ActivityAdminFormPage from './modules/activities/pages/ActivityAdminFormPage'
+import { ScrollToHash } from './components/layout/ScrollToHash'
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToHash />
+      <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/afiliacion" element={<AffiliationPage />} />
       <Route path="/noticias/:slug" element={<NewsDetailPage />} />
       <Route path="/actividades" element={<ActivitiesPage />} />
       <Route path="/actividades/:slug" element={<ActivityDetailPage />} />
+      <Route path="/negocios" element={<BusinessesPage />} />
+      <Route path="/negocios/:slug" element={<BusinessDetailPage />} />
       <Route path="/users/login" element={<LoginPage />} />
       <Route path="/users/recuperar" element={<ForgotPasswordPage />} />
       <Route path="/users/restablecer" element={<ResetPasswordPage />} />
@@ -45,15 +50,16 @@ export default function App() {
           <Route index element={<AdminHome />} />
           <Route path="informacion-institucional" element={<InstitutionalInfoAdminPage />} />
           <Route path="noticias" element={<NewsAdminPage />} />
-          <Route path="noticias/nueva" element={<NewsFormPage />} />
-          <Route path="noticias/:id/editar" element={<NewsFormPage />} />
+          <Route path="noticias/nueva" element={<Navigate to="/admin/noticias" replace />} />
+          <Route path="noticias/:id/editar" element={<Navigate to="/admin/noticias" replace />} />
           <Route path="negocios" element={<BusinessAdminPage />} />
           <Route path="actividades" element={<ActivitiesAdminPage />} />
-          <Route path="actividades/nueva" element={<ActivityAdminFormPage />} />
-          <Route path="actividades/:id/editar" element={<ActivityAdminFormPage />} />
+          <Route path="actividades/nueva" element={<Navigate to="/admin/actividades" replace />} />
+          <Route path="actividades/:id/editar" element={<Navigate to="/admin/actividades" replace />} />
           <Route path="usuarios" element={<UsersAdminPage />} />
         </Route>
       </Route>
     </Routes>
+    </>
   )
 }

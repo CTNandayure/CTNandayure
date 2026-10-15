@@ -88,6 +88,11 @@ export class BusinessController {
     return this.businessService.getPublicBusinesses();
   }
 
+  @Get('public/:idOrSlug')
+  async getPublicBusinessById(@Param('idOrSlug') idOrSlug: string) {
+    return this.businessService.getPublicBusinessById(idOrSlug);
+  }
+
   // Public on purpose: the affiliation form uploads photos and documents before the
   // applicant has an account. So it is rate limited per IP (see BusinessModule), keeps
   // only the types in MIME_TO_KIND, and checks the file's real content, not just what

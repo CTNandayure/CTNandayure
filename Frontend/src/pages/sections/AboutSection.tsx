@@ -1,16 +1,24 @@
 import { Container, SectionHeading } from '../../components/ui'
 import { useInstitutionalInfo } from '../../content/hooks/useInstitutionalInfo'
+import type { InstitutionalInfo } from '../../content/types'
+import { cn } from '../../lib/cn'
 
-export function AboutSection() {
-  const { data: info, status } = useInstitutionalInfo()
+interface AboutSectionProps {
+  previewData?: Partial<InstitutionalInfo>
+}
+
+export function AboutSection({ previewData }: AboutSectionProps = {}) {
+  const { data: dbInfo, status: dbStatus } = useInstitutionalInfo()
+  const info = previewData ? ({ ...dbInfo, ...previewData } as InstitutionalInfo) : dbInfo
+  const status = previewData ? 'ready' : dbStatus
 
   return (
-    <section id="quienes-somos" className="bg-white py-16 md:py-24">
+    <section id="quienes-somos" className={cn('bg-white py-16 md:py-24', previewData && 'rounded-2xl shadow-sm border border-brand-navy/10')}>
       <Container className="flex flex-col gap-10">
         <SectionHeading
           eyebrow="Quiénes somos"
           eyebrowColor="green"
-          title={status === 'ready' && info ? info.aboutTitle : 'Cargando…'}
+          title={status === 'ready' && info ? info.aboutTitle || 'Una cámara para un cantón que empezó de cero' : 'Cargando…'}
         />
 
         {status === 'error' && (
@@ -20,7 +28,7 @@ export function AboutSection() {
         {status === 'ready' && info && (
           <div className="grid gap-12 md:grid-cols-[1.15fr_0.85fr]">
             <div className="flex flex-col gap-4">
-              {info.historyText.split('\n\n').map((paragraph, i) => (
+              {(info.historyText || '').split('\n\n').map((paragraph, i) => (
                 <p key={i} className="text-[15px] leading-relaxed text-brand-ink/70">
                   {paragraph}
                 </p>

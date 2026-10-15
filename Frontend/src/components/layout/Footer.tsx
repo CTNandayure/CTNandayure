@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import logo from '../../assets/logo.png'
 
 const EXPLORE_LINKS = [
@@ -27,18 +28,18 @@ export function Footer() {
         <div className="flex flex-col gap-3">
           <h5 className="text-sm font-semibold uppercase tracking-wider text-white">Explorar</h5>
           {EXPLORE_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="text-sm hover:text-brand-yellow">
+            <Link key={link.href} to={link.href} className="text-sm hover:text-brand-yellow">
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
         <div className="flex flex-col gap-3">
           <h5 className="text-sm font-semibold uppercase tracking-wider text-white">Cámara</h5>
           {CAMARA_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="text-sm hover:text-brand-yellow">
+            <Link key={link.href} to={link.href} className="text-sm hover:text-brand-yellow">
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>

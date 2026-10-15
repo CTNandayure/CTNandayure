@@ -42,15 +42,15 @@ type ButtonAsLink = CommonProps &
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink
 
-// href with a "#" (in-page or cross-page anchor) renders a plain <a> so the
-// browser handles the scroll; a route-shaped href renders a router <Link>.
+// href starting with "/" renders a router <Link> so client-side navigation
+// and scroll-to-hash trigger correctly; external hrefs render a plain <a>.
 export function Button({ variant = 'primary', size = 'md', className, children, ...props }: ButtonProps) {
   const classes =
     variant === 'text' ? cn(textVariant, className) : cn(base, colorVariants[variant], sizes[size], className)
 
   if ('href' in props && props.href) {
     const { href, ...rest } = props
-    if (!href.includes('#') && href.startsWith('/')) {
+    if (href.startsWith('/')) {
       return (
         <Link to={href} className={classes} {...rest}>
           {children}

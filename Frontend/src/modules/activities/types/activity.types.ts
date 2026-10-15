@@ -7,6 +7,7 @@ export type ActivityStatus = 'BORRADOR' | 'PUBLICADA' | 'INACTIVA'
 // Business data the API embeds in every activity.
 export interface ActivityBusiness {
   id: string
+  slug?: string | null
   businessName: string
   district: DistrictKey
   categories: BusinessCategory[]
@@ -77,6 +78,7 @@ export interface AdminActivityPayload extends ActivityPayload {
 export interface PublicActivitiesParams {
   category?: ActivityCategory
   district?: DistrictKey
+  businessId?: string
   q?: string
   limit?: number
 }
