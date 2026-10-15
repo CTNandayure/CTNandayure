@@ -1,12 +1,20 @@
 import { Container, SectionHeading } from '../../components/ui'
 import { useInstitutionalInfo } from '../../content/hooks/useInstitutionalInfo'
 import { ClockIcon, FacebookIcon, InstagramIcon, MailIcon, PhoneIcon, PinIcon } from '../../components/ui/icons'
+import type { InstitutionalInfo } from '../../content/types'
+import { cn } from '../../lib/cn'
 
-export function ContactSection() {
-  const { data: info, status } = useInstitutionalInfo()
+interface ContactSectionProps {
+  previewData?: Partial<InstitutionalInfo>
+}
+
+export function ContactSection({ previewData }: ContactSectionProps = {}) {
+  const { data: dbInfo, status: dbStatus } = useInstitutionalInfo()
+  const info = previewData ? ({ ...dbInfo, ...previewData } as InstitutionalInfo) : dbInfo
+  const status = previewData ? 'ready' : dbStatus
 
   return (
-    <section id="contacto" className="bg-white py-16 md:py-24">
+    <section id="contacto" className={cn('bg-white py-16 md:py-24', previewData && 'rounded-2xl shadow-sm border border-brand-navy/10')}>
       <Container className="grid gap-12 md:grid-cols-2">
         <div className="flex flex-col gap-6">
           <SectionHeading eyebrow="Contáctenos" title="Estamos en el corazón de Nandayure" />

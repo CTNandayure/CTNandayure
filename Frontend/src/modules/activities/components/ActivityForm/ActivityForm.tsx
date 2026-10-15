@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Alert, Button, FormActions, FormField, ImageUpload, Input, Select, Textarea } from '../../../../components/ui'
+import { Alert, Button, FormField, ImageUpload, Input, Modal, Select, Textarea } from '../../../../components/ui'
 import { cn } from '../../../../lib/cn'
 import { BusinessLocationPicker } from '../../../business/components/BusinessLocationPicker'
 import { ApiError } from '../../services/apiClient'
@@ -45,6 +45,7 @@ export function ActivityForm({ mode, initial, businesses = [], onSubmit, onCance
   const [errors, setErrors] = useState<ActivityFormErrors>({})
   const [banner, setBanner] = useState<{ variant: 'error' | 'warning'; title: string; messages: string[] } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const bannerRef = useRef<HTMLDivElement>(null)
 
   // The form is long: bring the problem into view instead of leaving it above the fold.
@@ -73,7 +74,7 @@ export function ActivityForm({ mode, initial, businesses = [], onSubmit, onCance
     setErrors((previous) => ({ ...previous, daysOfWeek: undefined }))
   }
 
-  async function handleSubmit(event: React.FormEvent) {
+  function handleOpenConfirm(event: React.FormEvent) {
     event.preventDefault()
     setBanner(null)
 
@@ -84,6 +85,11 @@ export function ActivityForm({ mode, initial, businesses = [], onSubmit, onCance
       return
     }
 
+    setConfirmOpen(true)
+  }
+
+  async function handleConfirmedSubmit() {
+    setConfirmOpen(false)
     setIsSubmitting(true)
     try {
       await onSubmit(payloadFromValues(values), values.businessId)
@@ -101,7 +107,7 @@ export function ActivityForm({ mode, initial, businesses = [], onSubmit, onCance
   const isOwnerEditingInactive = mode === 'owner' && initial?.status === 'INACTIVA'
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
+    <form onSubmit={handleOpenConfirm} noValidate className="flex flex-col gap-8">
       {isOwnerEditingInactive && (
         <Alert variant="info" title="Actividad desactivada por la Cámara">
           Puede corregir su contenido, pero solo la administración puede volver a activarla.
@@ -362,14 +368,45 @@ export function ActivityForm({ mode, initial, businesses = [], onSubmit, onCance
         </div>
       </section>
 
-      <FormActions>
-        <Button type="submit" variant="primary" disabled={isSubmitting}>
-          {isSubmitting ? 'Guardando…' : isEditing ? 'Guardar cambios' : 'Guardar actividad'}
-        </Button>
+      <div className="flex items-center justify-between gap-3 pt-5 border-t border-brand-navy/10">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancelar
         </Button>
-      </FormActions>
+        <Button type="submit" variant={isEditing ? 'navy' : 'primary'} disabled={isSubmitting}>
+          {isSubmitting ? 'Guardando…' : isEditing ? 'Guardar cambios' : 'Guardar actividad'}
+        </Button>
+      </div>
+
+      <Modal
+        open={confirmOpen}
+        onOpenChange={(open) => !open && setConfirmOpen(false)}
+        title={isEditing ? 'Confirmar cambios' : 'Confirmar nueva actividad'}
+        description={
+          isEditing
+            ? '¿Está seguro de que desea guardar los cambios realizados en la actividad?'
+            : '¿Está seguro de que desea registrar esta nueva actividad en el sistema?'
+        }
+        footer={
+          <div className="flex items-center justify-between gap-3">
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              variant={isEditing ? 'navy' : 'primary'}
+              onClick={handleConfirmedSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Guardando...' : isEditing ? 'Guardar cambios' : 'Confirmar'}
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-brand-ink/70">
+          {isEditing
+            ? 'Los cambios se aplicarán inmediatamente a la información de la actividad.'
+            : 'La actividad se guardará como borrador y podrá publicarse desde el listado cuando esté lista.'}
+        </p>
+      </Modal>
     </form>
   )
 }

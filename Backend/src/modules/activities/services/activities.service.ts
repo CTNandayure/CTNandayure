@@ -34,6 +34,7 @@ import {
 
 const BUSINESS_SUMMARY_SELECT = {
   id: true,
+  slug: true,
   businessName: true,
   district: true,
   categories: true,

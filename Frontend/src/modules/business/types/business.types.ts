@@ -36,6 +36,7 @@ export interface BusinessRequestRecord {
 
 export interface BusinessRecord {
   id: string
+  slug?: string | null
   businessName: string
   categories: BusinessCategory[]
   district: DistrictKey
@@ -78,6 +79,7 @@ export interface UpdateBusinessData extends Partial<BusinessRecord> {
 
 export interface PublicBusiness {
   id: string
+  slug?: string | null
   businessName: string
   categories: BusinessCategory[]
   district: DistrictKey

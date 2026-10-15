@@ -17,14 +17,12 @@ import { ActivityStatusBadge } from '../ActivityStatusBadge'
 interface ActivitiesTableProps {
   activities: ActivityRecord[]
   isLoading: boolean
+  onView: (activity: ActivityRecord) => void
   onEdit: (activity: ActivityRecord) => void
   onChangeStatus: (activity: ActivityRecord, next: ActivityStatus) => void
 }
 
-// Same table pattern as NewsTable / UsersTable. Status actions depend on the
-// current status: BORRADOR→publish, PUBLICADA→unpublish or deactivate (moderation),
-// INACTIVA→reactivate.
-export function ActivitiesTable({ activities, isLoading, onEdit, onChangeStatus }: ActivitiesTableProps) {
+export function ActivitiesTable({ activities, isLoading, onView, onEdit, onChangeStatus }: ActivitiesTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
 
@@ -80,6 +78,9 @@ export function ActivitiesTable({ activities, isLoading, onEdit, onChangeStatus 
           const activity: ActivityRecord = row.original
           return (
             <div className="flex flex-wrap justify-end gap-1.5">
+              <TableActionButton variant="view" onClick={() => onView(activity)}>
+                Ver
+              </TableActionButton>
               <TableActionButton variant="edit" onClick={() => onEdit(activity)}>
                 Editar
               </TableActionButton>
@@ -108,7 +109,7 @@ export function ActivitiesTable({ activities, isLoading, onEdit, onChangeStatus 
         },
       },
     ],
-    [onEdit, onChangeStatus],
+    [onView, onEdit, onChangeStatus],
   )
 
   const features = tableFeatures({

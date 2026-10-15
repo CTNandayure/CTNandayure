@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Footer } from '../components/layout/Footer'
 import { Navbar } from '../components/layout/Navbar'
 import { Alert, Button, Container } from '../components/ui'
@@ -8,6 +8,20 @@ import { useNewsDetail } from '../content/hooks/useNewsDetail'
 export default function NewsDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { data: news, status } = useNewsDetail(slug)
+  const navigate = useNavigate()
+
+  const handleBack = () => {
+    const canGoBack =
+      window.history.state && typeof window.history.state.idx === 'number'
+        ? window.history.state.idx > 0
+        : window.history.length > 1
+
+    if (canGoBack) {
+      navigate(-1)
+    } else {
+      navigate('/#noticias')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-brand-paper">
@@ -15,7 +29,7 @@ export default function NewsDetailPage() {
 
       <Container className="py-14 md:py-20">
         <div className="mx-auto max-w-3xl">
-          <Button href="/#noticias" variant="text" className="mb-8">
+          <Button onClick={handleBack} variant="text" className="mb-8">
             ← Volver a noticias
           </Button>
 

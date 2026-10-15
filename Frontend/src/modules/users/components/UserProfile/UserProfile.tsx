@@ -139,6 +139,7 @@ export function UserProfile({ business, loadingBusiness = false, onGoToBusinessT
     .join(' ') || 'Sin nombre registrado'
 
   const isBusinessUser = user.role === 'NEGOCIO'
+  const isAdmin = user.role === 'ADMIN'
 
   const allImages = [
     ...(business?.coverImageUrl ? [business.coverImageUrl] : []),
@@ -200,23 +201,48 @@ export function UserProfile({ business, loadingBusiness = false, onGoToBusinessT
               </dl>
             </div>
 
-            <div className="flex flex-col justify-between rounded-xl border border-brand-navy/10 bg-brand-sand/45 p-6">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-green-strong">
-                  Seguridad
-                </p>
-                <h3 className="mt-3 text-xl font-bold text-brand-navy">Protege tu acceso</h3>
-                <p className="mt-2 text-sm leading-6 text-brand-ink/65">
-                  Actualiza tu contraseña periódicamente para mantener segura tu cuenta.
-                </p>
+            <div className="flex flex-col gap-6">
+              {isAdmin && (
+                <div className="flex flex-col justify-between rounded-xl border border-brand-navy/10 bg-brand-sand/45 p-6">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-green-strong">
+                      Administración
+                    </p>
+                    <h3 className="mt-3 text-xl font-bold text-brand-navy">Panel administrativo</h3>
+                    <p className="mt-2 text-sm leading-6 text-brand-ink/65">
+                      Accede a la gestión de información institucional, comercios afiliados, actividades, noticias y usuarios.
+                    </p>
+                  </div>
+                  <Link
+                    to="/admin"
+                    className="mt-8 inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand-navy px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-brand-navy/90 shadow-sm"
+                  >
+                    <span>Ir al panel administrativo</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
+
+              <div className="flex flex-col justify-between rounded-xl border border-brand-navy/10 bg-brand-sand/45 p-6">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-green-strong">
+                    Seguridad
+                  </p>
+                  <h3 className="mt-3 text-xl font-bold text-brand-navy">Protege tu acceso</h3>
+                  <p className="mt-2 text-sm leading-6 text-brand-ink/65">
+                    Actualiza tu contraseña periódicamente para mantener segura tu cuenta.
+                  </p>
+                </div>
+                <Link
+                  to="/users/cambiar-contrasena"
+                  state={{ from: '/users/perfil' }}
+                  className="mt-8 inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand-yellow px-7 py-3.5 text-sm font-semibold text-brand-navy transition-colors hover:brightness-95"
+                >
+                  Cambiar contraseña
+                </Link>
               </div>
-              <Link
-                to="/users/cambiar-contrasena"
-                state={{ from: '/users/perfil' }}
-                className="mt-8 inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand-yellow px-7 py-3.5 text-sm font-semibold text-brand-navy transition-colors hover:brightness-95"
-              >
-                Cambiar contraseña
-              </Link>
             </div>
           </div>
 

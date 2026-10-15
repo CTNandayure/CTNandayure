@@ -1,13 +1,21 @@
 import { Container } from '../../components/ui'
 import { useInstitutionalInfo } from '../../content/hooks/useInstitutionalInfo'
+import type { InstitutionalInfo } from '../../content/types'
+import { cn } from '../../lib/cn'
 
-export function MissionVisionSection() {
-  const { data: info, status } = useInstitutionalInfo()
+interface MissionVisionSectionProps {
+  previewData?: Partial<InstitutionalInfo>
+}
+
+export function MissionVisionSection({ previewData }: MissionVisionSectionProps = {}) {
+  const { data: dbInfo, status: dbStatus } = useInstitutionalInfo()
+  const info = previewData ? ({ ...dbInfo, ...previewData } as InstitutionalInfo) : dbInfo
+  const status = previewData ? 'ready' : dbStatus
 
   if (status !== 'ready' || !info) return null
 
   return (
-    <section className="bg-brand-navy py-16 text-white md:py-24">
+    <section className={cn('bg-brand-navy py-16 text-white md:py-24', previewData && 'rounded-2xl shadow-sm')}>
       <Container>
         <span className="text-xs font-bold uppercase tracking-widest text-brand-yellow">Misión y visión</span>
         <div className="mt-8 grid gap-10 md:grid-cols-2">

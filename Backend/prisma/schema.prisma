@@ -190,6 +190,7 @@ model BusinessRequest {
 // Affiliated business
 model Business {
   id              String          @id @default(cuid())
+  slug            String?         @unique @db.VarChar(160)
 
   businessName    String          @db.VarChar(150)
   categories      BusinessCategory[]

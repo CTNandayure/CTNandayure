@@ -1,16 +1,24 @@
 import { Link } from 'react-router-dom'
-import { Container, SectionHeading } from '../../components/ui'
+import { Alert, Container, SectionHeading } from '../../components/ui'
 import { useNews } from '../../content/news'
 
 export function NewsSection() {
-  const { data: news } = useNews()
+  const { data: news, status } = useNews()
 
-  if (!news.length) return null
+  if (status === 'ready' && !news.length) return null
 
   return (
     <section id="noticias" className="bg-white py-16 md:py-24">
       <Container className="flex flex-col gap-8">
         <SectionHeading eyebrow="Actualidad" eyebrowColor="green" title="Noticias de la Cámara" />
+
+        {status === 'loading' && <p className="text-brand-ink/60">Cargando noticias…</p>}
+
+        {status === 'error' && (
+          <Alert variant="error" title="No se pudieron cargar las noticias">
+            Intente recargar la página en unos minutos.
+          </Alert>
+        )}
         <div className="flex flex-col">
           {news.map((n) => (
             <Link

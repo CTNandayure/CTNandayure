@@ -11,6 +11,7 @@ import type {
 // GET /businesses/public, except businessStatus which the owner/admin lists use).
 export interface ActivityBusinessSummary {
   id: string;
+  slug?: string | null;
   businessName: string;
   district: District;
   categories: BusinessCategory[];
