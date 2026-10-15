@@ -1,12 +1,45 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_PIPE } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { InstitutionalInfoModule } from './institutional-info/institutional-info.module';
+import { NewsModule } from './news/news.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { UploadsModule } from './uploads/uploads.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { MailModule } from './modules/mail/mail.module';
+import { BusinessModule } from './modules/business/business.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    InstitutionalInfoModule,
+    NewsModule,
+    UploadsModule,
+    AuthModule,
+    UserModule,
+    MailModule,
+    BusinessModule,
+    ActivitiesModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
+    },
+  ],
 })
 export class AppModule {}

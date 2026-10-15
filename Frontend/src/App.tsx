@@ -1,122 +1,65 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import AdminHome from './pages/admin/AdminHome'
+import AdminLayout from './pages/admin/AdminLayout'
+import InstitutionalInfoAdminPage from './pages/admin/InstitutionalInfoAdminPage'
+import AffiliationPage from './modules/business/pages/AffiliationPage'
+import LandingPage from './pages/LandingPage'
+import NewsDetailPage from './pages/NewsDetailPage'
+import NewsAdminPage from './modules/news/pages/NewsAdminPage'
+import LoginPage from './modules/users/pages/LoginPage'
+import ForgotPasswordPage from './modules/users/pages/ForgotPasswordPage'
+import ResetPasswordPage from './modules/users/pages/ResetPasswordPage'
+import ActivateAccountPage from './modules/users/pages/ActivateAccountPage'
+import ActivationTokenPage from './modules/users/pages/ActivationTokenPage'
+import ProfilePage from './modules/users/pages/ProfilePage'
+import ChangePasswordPage from './modules/users/pages/ChangePasswordPage'
+import UsersAdminPage from './modules/users/pages/UsersAdminPage'
+import { ProtectedRoute } from './modules/users/components/ProtectedRoute/ProtectedRoute'
+import BusinessAdminPage from './modules/business/pages/BusinessAdminPage'
+import BusinessesPage from './modules/business/pages/BusinessesPage'
+import BusinessDetailPage from './modules/business/pages/BusinessDetailPage'
+import ActivitiesPage from './modules/activities/pages/ActivitiesPage'
+import ActivityDetailPage from './modules/activities/pages/ActivityDetailPage'
+import ActivitiesAdminPage from './modules/activities/pages/ActivitiesAdminPage'
+import { ScrollToHash } from './components/layout/ScrollToHash'
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <ScrollToHash />
+      <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/afiliacion" element={<AffiliationPage />} />
+      <Route path="/noticias/:slug" element={<NewsDetailPage />} />
+      <Route path="/actividades" element={<ActivitiesPage />} />
+      <Route path="/actividades/:slug" element={<ActivityDetailPage />} />
+      <Route path="/negocios" element={<BusinessesPage />} />
+      <Route path="/negocios/:slug" element={<BusinessDetailPage />} />
+      <Route path="/users/login" element={<LoginPage />} />
+      <Route path="/users/recuperar" element={<ForgotPasswordPage />} />
+      <Route path="/users/restablecer" element={<ResetPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/users/activar" element={<ActivateAccountPage />} />
+      <Route path="/users/activar-token" element={<ActivationTokenPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/users/perfil" element={<ProfilePage />} />
+        <Route path="/users/cambiar-contrasena" element={<ChangePasswordPage />} />
+      </Route>
+      <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminHome />} />
+          <Route path="informacion-institucional" element={<InstitutionalInfoAdminPage />} />
+          <Route path="noticias" element={<NewsAdminPage />} />
+          <Route path="noticias/nueva" element={<Navigate to="/admin/noticias" replace />} />
+          <Route path="noticias/:id/editar" element={<Navigate to="/admin/noticias" replace />} />
+          <Route path="negocios" element={<BusinessAdminPage />} />
+          <Route path="actividades" element={<ActivitiesAdminPage />} />
+          <Route path="actividades/nueva" element={<Navigate to="/admin/actividades" replace />} />
+          <Route path="actividades/:id/editar" element={<Navigate to="/admin/actividades" replace />} />
+          <Route path="usuarios" element={<UsersAdminPage />} />
+        </Route>
+      </Route>
+    </Routes>
     </>
   )
 }
-
-export default App

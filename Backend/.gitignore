@@ -6,6 +6,9 @@
 # Prisma generated client
 /src/generated/prisma
 
+# Uploaded content (user-generated, not source)
+/uploads
+
 # Environment variables
 .env
 .env.*
