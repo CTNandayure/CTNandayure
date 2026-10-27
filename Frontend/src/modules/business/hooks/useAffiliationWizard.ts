@@ -69,8 +69,10 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
     }
   }
 
+  const isAffiliationMode = !isAdminMode && !isEditMode && !isUserSelfManagement
+
   const validateCurrentStep = () => {
-    const stepErrors = validateStep(currentStep, formData)
+    const stepErrors = validateStep(currentStep, formData, isAffiliationMode)
     setErrors(stepErrors)
     return Object.keys(stepErrors).length === 0
   }
@@ -79,8 +81,9 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
     const allErrors: Record<string, string> = {}
     let firstErrorStep = -1
 
-    for (let s = 0; s <= 4; s++) {
-      const stepErrors = validateStep(s, formData)
+    const maxStep = isAffiliationMode ? 5 : 4
+    for (let s = 0; s <= maxStep; s++) {
+      const stepErrors = validateStep(s, formData, isAffiliationMode)
       if (Object.keys(stepErrors).length > 0) {
         if (firstErrorStep === -1) {
           firstErrorStep = s
@@ -122,7 +125,7 @@ export function useAffiliationWizard(options: UseAffiliationWizardProps | boolea
   const goToStep = (step: number) => {
     if (step > currentStep) {
       for (let s = 0; s < step; s++) {
-        const stepErrors = validateStep(s, formData)
+        const stepErrors = validateStep(s, formData, isAffiliationMode)
         if (Object.keys(stepErrors).length > 0) {
           setErrors(stepErrors)
           setCurrentStep(s)

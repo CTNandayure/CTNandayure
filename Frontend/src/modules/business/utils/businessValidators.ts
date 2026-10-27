@@ -92,7 +92,16 @@ export const validateDistrict = (district: string): string => {
   return ''
 }
 
-export const validateStep = (step: number, data: any): Record<string, string> => {
+export const validatePrivacyPolicy = (accepted: unknown): string => {
+  if (!accepted) return 'Debe aceptar la política de privacidad y tratamiento de datos para enviar la solicitud'
+  return ''
+}
+
+export const validateStep = (
+  step: number,
+  data: any,
+  isAffiliation = false,
+): Record<string, string> => {
   const errors: Record<string, string> = {}
 
   if (step === 0) {
@@ -176,6 +185,11 @@ export const validateStep = (step: number, data: any): Record<string, string> =>
   if (step === 4) {
     const docsErr = validateDocumentUrls(data.documentUrls || [])
     if (docsErr) errors.documentUrls = docsErr
+  }
+
+  if (step === 5 && isAffiliation) {
+    const privacyErr = validatePrivacyPolicy(data.acceptPrivacyPolicy)
+    if (privacyErr) errors.acceptPrivacyPolicy = privacyErr
   }
 
   return errors

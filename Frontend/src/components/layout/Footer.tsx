@@ -11,6 +11,7 @@ const EXPLORE_LINKS = [
 const CAMARA_LINKS = [
   { href: '/#quienes-somos', label: 'Quiénes somos' },
   { href: '/afiliacion', label: 'Afiliación' },
+  { href: '/politica-de-privacidad', label: 'Política de privacidad' },
   { href: '/#contacto', label: 'Contacto' },
 ]
 
@@ -44,8 +45,11 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-[1280px] flex-wrap justify-between gap-2 pt-6 text-xs">
+      <div className="mx-auto flex max-w-[1280px] flex-wrap justify-between items-center gap-2 pt-6 text-xs">
         <span>© 2026 Cámara de Turismo Rural y Comunitario de Nandayure.</span>
+        <Link to="/politica-de-privacidad" className="hover:text-brand-yellow underline transition-colors">
+          Política de privacidad y protección de datos
+        </Link>
       </div>
     </footer>
   )

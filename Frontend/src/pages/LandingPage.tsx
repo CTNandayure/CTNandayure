@@ -7,6 +7,7 @@ import { BusinessesSection } from './sections/BusinessesSection'
 import { ContactSection } from './sections/ContactSection'
 import { DistrictsSection } from './sections/DistrictsSection'
 import { Hero } from './sections/Hero'
+import { MapSection } from './sections/MapSection'
 import { MissionVisionSection } from './sections/MissionVisionSection'
 import { NewsSection } from './sections/NewsSection'
 
@@ -21,6 +22,7 @@ export default function LandingPage() {
         <DistrictsSection />
         <ActivitiesSection />
         <BusinessesSection />
+        <MapSection />
         <NewsSection />
         <AffiliationCta />
         <ContactSection />

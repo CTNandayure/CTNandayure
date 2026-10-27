@@ -34,6 +34,8 @@ export interface Business {
   phone: string
   email: string
   address: string
+  latitude?: number | null
+  longitude?: number | null
   coverImageUrl: string
   galleryUrls: string[]
   facebookUrl: string | null

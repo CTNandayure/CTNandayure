@@ -18,6 +18,8 @@ import { ProtectedRoute } from './modules/users/components/ProtectedRoute/Protec
 import BusinessAdminPage from './modules/business/pages/BusinessAdminPage'
 import BusinessesPage from './modules/business/pages/BusinessesPage'
 import BusinessDetailPage from './modules/business/pages/BusinessDetailPage'
+import MapPage from './modules/business/pages/MapPage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import ActivitiesPage from './modules/activities/pages/ActivitiesPage'
 import ActivityDetailPage from './modules/activities/pages/ActivityDetailPage'
 import ActivitiesAdminPage from './modules/activities/pages/ActivitiesAdminPage'
@@ -30,6 +32,8 @@ export default function App() {
       <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/afiliacion" element={<AffiliationPage />} />
+      <Route path="/mapa" element={<MapPage />} />
+      <Route path="/politica-de-privacidad" element={<PrivacyPolicyPage />} />
       <Route path="/noticias/:slug" element={<NewsDetailPage />} />
       <Route path="/actividades" element={<ActivitiesPage />} />
       <Route path="/actividades/:slug" element={<ActivityDetailPage />} />
