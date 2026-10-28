@@ -10,6 +10,7 @@ export function useBusinesses() {
     fetch(`${API_URL}/businesses/public`)
       .then((res) => res.json())
       .then((businesses: Business[]) => {
+        if (!Array.isArray(businesses)) throw new Error('Invalid response')
         setData(businesses)
         setStatus('ready')
       })

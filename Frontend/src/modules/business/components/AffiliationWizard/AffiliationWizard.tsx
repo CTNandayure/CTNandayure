@@ -65,7 +65,16 @@ export const AffiliationWizard: React.FC<AffiliationWizardProps> = ({
       case 4:
         return <StepDocuments formData={wizard.formData} errors={wizard.errors} updateField={wizard.updateField} />
       case 5:
-        return <StepReview formData={wizard.formData} isAdminMode={isAdminMode} isEditMode={isEditMode} goToStep={wizard.goToStep} />
+        return (
+          <StepReview
+            formData={wizard.formData}
+            errors={wizard.errors}
+            updateField={wizard.updateField}
+            isAdminMode={isAdminMode}
+            isEditMode={isEditMode}
+            goToStep={wizard.goToStep}
+          />
+        )
       default:
         return null
     }

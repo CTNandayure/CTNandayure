@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: '/#distritos', label: 'Distritos' },
   { href: '/#actividades', label: 'Actividades' },
   { href: '/#negocios', label: 'Negocios' },
+  { href: '/mapa', label: 'Mapa' },
   { href: '/#noticias', label: 'Noticias' },
   { href: '/#contacto', label: 'Contacto' },
 ]

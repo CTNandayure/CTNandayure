@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Footer } from '../../../components/layout/Footer'
 import { Navbar } from '../../../components/layout/Navbar'
@@ -357,6 +357,9 @@ export default function BusinessDetailPage() {
   const identifier = slug || id
   const { data: business, status } = usePublicBusiness(identifier)
   const navigate = useNavigate()
+  const location = useLocation()
+  // Set by the map popup so this page can take the visitor back to the map.
+  const fromMap = (location.state as { from?: string } | null)?.from === 'map'
 
   const handleBack = () => {
     const canGoBack =
@@ -367,7 +370,7 @@ export default function BusinessDetailPage() {
     if (canGoBack) {
       navigate(-1)
     } else {
-      navigate('/#negocios')
+      navigate(fromMap ? '/mapa' : '/#negocios')
     }
   }
 
@@ -378,7 +381,7 @@ export default function BusinessDetailPage() {
       <Container className="py-12 md:py-16">
         <div className="mx-auto max-w-5xl">
           <Button onClick={handleBack} variant="text" className="mb-8">
-            ← Volver al directorio de negocios
+            ← {fromMap ? 'Volver al mapa' : 'Volver al directorio de negocios'}
           </Button>
 
           {status === 'loading' && <p className="text-brand-ink/60">Cargando…</p>}
